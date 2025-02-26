@@ -7,7 +7,7 @@ export default function Toggle({
 }: {
   label: string;
   cb: (state: boolean) => void;
-  className;
+  className?: string;
 }) {
   const [state, setState] = useState(false);
   return (
