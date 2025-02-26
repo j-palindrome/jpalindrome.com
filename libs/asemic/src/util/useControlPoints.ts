@@ -21,7 +21,7 @@ import {
   vec4,
 } from "three/tsl";
 import { WebGPURenderer } from "three/webgpu";
-import { GroupBuilder } from "../builders/Builder";
+import { GroupBuilder } from "../builders/GroupBuilder";
 import { bezierPosition, bezierRotation } from "./bezier";
 
 function useControlPointArray(builder: GroupBuilder<any, any>) {
