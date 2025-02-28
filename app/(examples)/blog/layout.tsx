@@ -8,6 +8,7 @@ export default function Layout({ children }) {
         <div className="flex w-full space-x-4">
           <Link href="/blog/social-games/start">start</Link>
           <Link href="/blog/social-games/feb-26">feb 26</Link>
+          <Link href="/blog/social-games/aframe">aframe</Link>
         </div>
         {children}
       </body>
