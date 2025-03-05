@@ -27,6 +27,7 @@ import BrushBuilder from '../builders/BrushBuilder'
 function useControlPointArray(group: GroupBuilder, builder: BrushBuilder<any>) {
   // @ts-ignore
   const renderer = useThree(({ gl }) => gl as WebGPURenderer)
+  builder.render(group, 0)
 
   const curvePositionArray = instancedArray(
     builder.settings.maxPoints * builder.settings.maxCurves,
