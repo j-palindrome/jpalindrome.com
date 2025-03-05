@@ -2,7 +2,6 @@ import type { ClientPerspective, QueryParams } from 'next-sanity'
 import { draftMode } from 'next/headers'
 
 import { client } from './client'
-import { token } from './token'
 
 /**
  * Used to fetch data in Server Components, it has built in support for handling Draft Mode and perspectives.
@@ -20,7 +19,7 @@ export async function sanityFetch<QueryResponse>({
    * When outside of the Sanity Studio we also support the Vercel Toolbar Visual Editing feature, which is only enabled in production when it's a Vercel Preview Deployment.
    */
   stega = perspective === 'previewDrafts' ||
-    process.env.VERCEL_ENV === 'preview'
+    process.env.VERCEL_ENV === 'preview',
 }: {
   query: string
   params?: QueryParams
@@ -30,13 +29,11 @@ export async function sanityFetch<QueryResponse>({
   if (perspective === 'previewDrafts') {
     return client.fetch<QueryResponse>(query, params, {
       stega,
-      perspective: 'previewDrafts',
-      // The token is required to fetch draft content
-      token,
+      perspective: 'published',
       // The `previewDrafts` perspective isn't available on the API CDN
       useCdn: false,
       // And we can't cache the responses as it would slow down the live preview experience
-      next: { revalidate: 0 }
+      next: { revalidate: 0 },
     })
   }
   return client.fetch<QueryResponse>(query, params, {
@@ -46,6 +43,6 @@ export async function sanityFetch<QueryResponse>({
     useCdn: true,
     // Only enable Stega in production if it's a Vercel Preview Deployment, as the Vercel Toolbar supports Visual Editing
     // When using the `published` perspective we use time-based revalidation to match the time-to-live on Sanity's API CDN (60 seconds)
-    next: { revalidate: 60 }
+    next: { revalidate: 60 },
   })
 }
