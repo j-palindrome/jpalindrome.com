@@ -1,8 +1,8 @@
-"use client";
-import { Asemic, AsemicCanvas } from "@/libs/asemic/src/Asemic";
-import { scale } from "@/libs/util/math";
-import { waveform } from "@/libs/util/math/functions";
-import { now } from "lodash";
+'use client'
+import { Asemic, AsemicCanvas } from '@asemic'
+import { scale } from '@/libs/util/math'
+import { waveform } from '@/libs/util/math/functions'
+import { now } from 'lodash'
 import {
   time,
   uv,
@@ -15,7 +15,7 @@ import {
   length,
   ivec2,
   vertexIndex,
-} from "three/tsl";
+} from 'three/tsl'
 
 export default function Genuary12() {
   return (
@@ -24,7 +24,7 @@ export default function Genuary12() {
         builder={(b) => {
           b.transform({
             // vec4(1, 1, 0, 0)
-          });
+          })
           // b.newGroup(g =>
           //   g.newCurve([0, 0.5, { thickness: 10 }], [1, 0.5, { thickness: 10 }])
           // )
@@ -62,11 +62,11 @@ export default function Genuary12() {
                     0,
                     { thickness: (1920 / count) * waveform(now() / 1000) },
                   ],
-                );
-            });
-          });
+                )
+            })
+          })
         }}
       />
     </AsemicCanvas>
-  );
+  )
 }

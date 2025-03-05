@@ -1,8 +1,8 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import { gaussianBlur } from "@/libs/util/three/effects";
-import { dimensions } from "@/libs/util/three/utility";
-import { vec2 } from "three/tsl";
+'use client'
+import { Asemic } from '@asemic'
+import { gaussianBlur } from '@/libs/util/three/effects'
+import { dimensions } from '@/libs/util/three/utility'
+import { vec2 } from 'three/tsl'
 
 export default function Genuary21() {
   // const gui = new GUI()
@@ -27,15 +27,15 @@ export default function Genuary21() {
         //   }
         // )
         b.newGroup(
-          "attractors",
+          'attractors',
           (g) => {
-            g.newCurve([0, 0], [0, 1]);
+            g.newCurve([0, 0], [0, 1])
           },
           {
             update: true,
             // maxLength: 2,
             spacing: 2,
-            spacingType: "count",
+            spacingType: 'count',
             recalculate: () => Math.random() * 500,
           },
           {
@@ -51,16 +51,16 @@ export default function Genuary21() {
             spinningForce: 0,
             pointVelocity: (velocity, position) => {
               const brightness = gaussianBlur(
-                b.postProcessing.scenePass.getPreviousTextureNode("output"),
+                b.postProcessing.scenePass.getPreviousTextureNode('output'),
                 position.div(dimensions),
                 // quantize(position, 0.05),
                 vec2(0.03).div(dimensions),
-              ).r.mul(11);
+              ).r.mul(11)
               // return velocity
-              return velocity.mul(brightness.oneMinus());
+              return velocity.mul(brightness.oneMinus())
             },
           },
-        );
+        )
       }}
       // settings={{
       //   postProcessing: input => {
@@ -68,5 +68,5 @@ export default function Genuary21() {
       //   }
       // }}
     />
-  );
+  )
 }

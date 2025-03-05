@@ -1,6 +1,6 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import { random } from "lodash";
+'use client'
+import { Asemic } from '@asemic'
+import { random } from 'lodash'
 import {
   float,
   mx_noise_float,
@@ -13,10 +13,10 @@ import {
   vec2,
   vec3,
   vec4,
-} from "three/tsl";
+} from 'three/tsl'
 
 export default function Genuary5() {
-  const recalculate = 3000;
+  const recalculate = 3000
   const pointFrag = (p: number) => (input, textureVector) =>
     vec4(
       input.xyz,
@@ -36,8 +36,8 @@ export default function Genuary5() {
         float(0.5).mul(textureVector.x.oneMinus().pow(3)),
         0,
       ),
-    );
-  const count = 30;
+    )
+  const count = 30
   return (
     <Asemic
       dimensions={[1080, 1920]}
@@ -54,9 +54,9 @@ export default function Genuary5() {
                 g.newCurve().set({
                   start: p * recalculate,
                   pointFrag: pointFrag(p),
-                });
+                })
 
-                let grid = random(5);
+                let grid = random(5)
                 g.transform({
                   reset: true,
                   scale: [1 / 5, (1 / 23) * g.h],
@@ -75,12 +75,12 @@ export default function Genuary5() {
                   .repeat(23, (p, i) => {
                     g.newPoints([0, 0], [0, 1]).transform({
                       translate: [Math.random() > 0.5 ? -1 / 2 : 1 / 2, 1.5],
-                    });
-                  });
-              });
-            });
+                    })
+                  })
+              })
+            })
           })
       }
     />
-  );
+  )
 }

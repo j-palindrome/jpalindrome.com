@@ -1,10 +1,10 @@
-"use client";
-import { Asemic, AsemicCanvas } from "@/libs/asemic/src/Asemic";
-import { scale } from "@/libs/util/math";
-import { now } from "lodash";
+'use client'
+import { Asemic, AsemicCanvas } from '@asemic'
+import { scale } from '@/libs/util/math'
+import { now } from 'lodash'
 
-import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
-import { floor, Fn, PI2, range, select, vec4 } from "three/tsl";
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
+import { floor, Fn, PI2, range, select, vec4 } from 'three/tsl'
 
 export default function Genuary14() {
   return (
@@ -12,13 +12,13 @@ export default function Genuary14() {
       <Asemic
         builder={(b) =>
           b.newGroup(
-            "dash",
+            'dash',
             (g) => {
               g.transform({
                 scale: [1, g.h],
                 push: true,
                 alpha: 1 / 256,
-              });
+              })
               g.repeat(300, ({ i }) =>
                 g.newCurve(
                   [
@@ -26,7 +26,7 @@ export default function Genuary14() {
                     g.noise([g.time * 0.5, g.hash(), i]),
                     {
                       thickness: 1920 * 1.1,
-                      reset: "last",
+                      reset: 'last',
                       scale: [1, g.getRange(g.hash(), [0.1, 0.2])],
                       translate: [g.getRange(g.hash(), [0, 0.1]), -0.1],
                     },
@@ -34,7 +34,7 @@ export default function Genuary14() {
                   [0.5, g.noise([g.time * 0.5, g.hash(), i])],
                   [1, g.noise([g.time * 0.5, g.hash(), i])],
                 ),
-              );
+              )
             },
             {
               spacing: 500,
@@ -50,5 +50,5 @@ export default function Genuary14() {
         }
       />
     </AsemicCanvas>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
+'use client'
+import { Asemic } from '@asemic'
 import {
   mx_noise_float,
   mx_noise_vec3,
@@ -10,7 +10,7 @@ import {
   vec2,
   vec3,
   vec4,
-} from "three/tsl";
+} from 'three/tsl'
 
 export default function Genuary5() {
   return (
@@ -48,5 +48,5 @@ export default function Genuary5() {
         )
       }
     />
-  );
+  )
 }

@@ -1,6 +1,6 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import { random } from "lodash";
+'use client'
+import { Asemic } from '@asemic'
+import { random } from 'lodash'
 import {
   hash,
   mul,
@@ -9,7 +9,7 @@ import {
   triNoise3D,
   vec2,
   vec3,
-} from "three/tsl";
+} from 'three/tsl'
 
 export default function Page() {
   return (
@@ -35,18 +35,18 @@ export default function Page() {
             // input,
             maxLength: 2,
             spacing: 200,
-            spacingType: "count",
+            spacingType: 'count',
             thickness: 1500,
             alpha: 0.002,
           })
           .repeat((c) => {
-            b.newCurve();
+            b.newCurve()
             b.repeat((p, i) => {
-              b.newPoints([p, -1]);
-            }, 8);
+              b.newPoints([p, -1])
+            }, 8)
           }, 200)
           .debug()
       }
     />
-  );
+  )
 }

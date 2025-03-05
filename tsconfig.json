@@ -21,7 +21,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@util/*": ["./libs/util/*"]
+      "@util/*": ["./libs/util/*"],
+      "@asemic": ["./libs/asemic/src/index"]
     },
     "target": "ES2017"
   },

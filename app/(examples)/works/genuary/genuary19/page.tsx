@@ -1,8 +1,8 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import SceneBuilder from "@/libs/asemic/src/Builder";
-import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
-import { hash, time, vec2 } from "three/tsl";
+'use client'
+import { Asemic } from '@asemic'
+import SceneBuilder from '@asemic'
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
+import { hash, time, vec2 } from 'three/tsl'
 
 const builder = (b: SceneBuilder) => {
   // b.newGroup(
@@ -14,11 +14,11 @@ const builder = (b: SceneBuilder) => {
   //   { maxLength: 2, recalculate: false, update: true, spacing: 0.1 }
   // )
   b.newGroup(
-    "line",
+    'line',
     (g) => {
       g.repeatGrid([10, 10], ({ p, i }) => {
         g.repeat(10, () => {
-          g.newCurve();
+          g.newCurve()
           g.repeat(4, () =>
             g.newPoints([
               0,
@@ -30,9 +30,9 @@ const builder = (b: SceneBuilder) => {
                 reset: true,
               },
             ]),
-          );
-        });
-      });
+          )
+        })
+      })
     },
     {
       update: true,
@@ -44,17 +44,17 @@ const builder = (b: SceneBuilder) => {
       maxLength: 2,
       spacing: 1,
     },
-  );
-};
+  )
+}
 export default function Genuary18() {
   return (
     <Asemic
       builder={builder}
       settings={{
         postProcessing: (input) => {
-          return input.add(bloom(input, 0.01));
+          return input.add(bloom(input, 0.01))
         },
       }}
     />
-  );
+  )
 }

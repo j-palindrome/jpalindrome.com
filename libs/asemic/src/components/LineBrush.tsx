@@ -17,7 +17,7 @@ import {
   StorageInstancedBufferAttribute,
   WebGPURenderer,
 } from 'three/webgpu'
-import { GroupBuilder } from '../builders/GroupBuilder'
+import GroupBuilder from '../builders/GroupBuilder'
 import { useCurve } from '../util/useControlPoints'
 import BrushBuilder from '../builders/BrushBuilder'
 
@@ -40,7 +40,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function LineBrush<K extends Record<string, any>>({
+export default function LineBrush({
   children,
   ...settings
 }: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<

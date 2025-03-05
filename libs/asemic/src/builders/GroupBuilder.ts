@@ -3,10 +3,10 @@ import { CurvePath, LineCurve, QuadraticBezierCurve, Vector2 } from 'three'
 import { lerp } from 'three/src/math/MathUtils.js'
 import { mrt, output } from 'three/tsl'
 import invariant from 'tiny-invariant'
-import { Builder } from './Builder'
-import { PointBuilder } from './PointBuilder'
+import Builder from './Builder'
+import PointBuilder from './PointBuilder'
 
-export class GroupBuilder extends Builder {
+export default class GroupBuilder extends Builder {
   time: number = performance.now() / 1000
   curves: PointBuilder[][] = []
   lastIndex: number = 0

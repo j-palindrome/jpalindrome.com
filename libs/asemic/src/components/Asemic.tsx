@@ -18,11 +18,11 @@ import {
 import { HalfFloatType, OrthographicCamera, RenderTarget, Vector2 } from 'three'
 import { Fn, pass, texture } from 'three/tsl'
 import { PostProcessing, QuadMesh, WebGPURenderer } from 'three/webgpu'
-import { SceneBuilder } from './builders/SceneBuilder'
-import { AsemicContext } from './util/asemicContext'
-import { SettingsInput, useBuilderEvents, useEvents } from './util/useEvents'
+import SceneBuilder from '../builders/SceneBuilder'
+import { AsemicContext } from '../util/asemicContext'
+import { SettingsInput, useBuilderEvents, useEvents } from '../util/useEvents'
 import { el } from '@elemaudio/core'
-import Toggle from './util/Toggle'
+import Toggle from '../util/Toggle'
 
 extend({
   QuadMesh,

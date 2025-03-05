@@ -1,6 +1,6 @@
 import { max } from 'lodash'
 import { mrt, output } from 'three/tsl'
-import { GroupBuilder } from './GroupBuilder'
+import GroupBuilder from './GroupBuilder'
 
 const defaultBrushSettings: { [T in BrushTypes]: BrushData<T> } = {
   line: { type: 'line' },

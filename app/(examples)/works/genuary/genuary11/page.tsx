@@ -1,7 +1,7 @@
-"use client";
-import { Asemic, AsemicCanvas } from "@/libs/asemic/src/Asemic";
-import { scale } from "@/libs/util/math";
-import { now } from "lodash";
+'use client'
+import { Asemic, AsemicCanvas } from '@asemic'
+import { scale } from '@/libs/util/math'
+import { now } from 'lodash'
 import {
   time,
   uv,
@@ -13,7 +13,7 @@ import {
   select,
   length,
   ivec2,
-} from "three/tsl";
+} from 'three/tsl'
 
 export default function Genuary11() {
   return (
@@ -21,17 +21,17 @@ export default function Genuary11() {
       <Asemic
         builder={(b) => {
           b.transform({
-            type: "line",
+            type: 'line',
             thickness: 100,
-            gapType: "count",
+            gapType: 'count',
           }).newGroup((g) =>
-            g.text("harder\nthan\nit\nlooks", {
+            g.text('harder\nthan\nit\nlooks', {
               scale: 0.1,
               translate: [0.3, 0.6 * g.h],
             }),
-          );
+          )
         }}
       />
     </AsemicCanvas>
-  );
+  )
 }

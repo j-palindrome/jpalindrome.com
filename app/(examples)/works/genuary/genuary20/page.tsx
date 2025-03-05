@@ -1,13 +1,13 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import SceneBuilder from "@/libs/asemic/src/Builder";
-import { afterImage } from "@/libs/util/three/afterImage";
-import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
-import { vec2 } from "three/tsl";
+'use client'
+import { Asemic } from '@asemic'
+import SceneBuilder from '@asemic'
+import { afterImage } from '@/libs/util/three/afterImage'
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
+import { vec2 } from 'three/tsl'
 
 const builder = (b: SceneBuilder) => {
   b.newGroup(
-    "attractors",
+    'attractors',
     (g) => {
       g.repeatGrid([2, 10], ({ i }) => {
         // if (i[0] % 2)
@@ -17,9 +17,9 @@ const builder = (b: SceneBuilder) => {
             rotate: 0.25,
             translate: [1, 0],
             scale: [g.globals.h, 1],
-          });
+          })
         } else {
-          g.transform({ reset: true, scale: [1, g.globals.h] });
+          g.transform({ reset: true, scale: [1, g.globals.h] })
         }
         g.newCurve(
           [
@@ -33,8 +33,8 @@ const builder = (b: SceneBuilder) => {
             },
           ],
           [1, 0],
-        );
-      });
+        )
+      })
     },
     {
       update: true,
@@ -50,20 +50,20 @@ const builder = (b: SceneBuilder) => {
       // maxSpeed: 2,
       spinningForce: 0,
       pointPosition: (position) => {
-        return vec2(position.x, position.y.div(0.03).round().mul(0.03));
+        return vec2(position.x, position.y.div(0.03).round().mul(0.03))
       },
     },
-  );
-};
+  )
+}
 export default function Genuary18() {
   return (
     <Asemic
       builder={builder}
       settings={{
         postProcessing: (input) => {
-          return afterImage(input.add(bloom(input, 0.1)), 0.7);
+          return afterImage(input.add(bloom(input, 0.1)), 0.7)
         },
       }}
     />
-  );
+  )
 }

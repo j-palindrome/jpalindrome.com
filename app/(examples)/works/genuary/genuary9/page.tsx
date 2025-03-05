@@ -1,6 +1,6 @@
-"use client";
-import { Asemic, AsemicCanvas } from "@/libs/asemic/src/Asemic";
-import { time, uv, vec2, vec3, vec4, mx_noise_float } from "three/tsl";
+'use client'
+import { Asemic, AsemicCanvas } from '@asemic'
+import { time, uv, vec2, vec3, vec4, mx_noise_float } from 'three/tsl'
 
 export default function Page() {
   return (
@@ -15,13 +15,13 @@ export default function Page() {
                 uv().y.mul(100),
                 info.pointUV.x.mul(100),
                 info.pointUV.y.mul(20),
-              );
-              return vec4(1, 1, 1, mx_noise_float(thisUv));
+              )
+              return vec4(1, 1, 1, mx_noise_float(thisUv))
             },
           }).repeat(25, ({ p }) => {
             b.newGroup((g) => {
               g.repeat(2, () => {
-                const random = g.getRandomWithin(0.02, 0.1);
+                const random = g.getRandomWithin(0.02, 0.1)
                 g.transform({
                   start: p * g.settings.recalculate,
                   reset: true,
@@ -31,7 +31,7 @@ export default function Page() {
                   // thickness: g.getRandomWithin(300, 500) * random
                   thickness: random * 500,
                   alpha: g.getRandomWithin(0.2, 0.7),
-                });
+                })
                 g.repeat(12, () =>
                   g.newCurve(
                     [
@@ -44,12 +44,12 @@ export default function Page() {
                     ],
                     [0, 1],
                   ),
-                );
-              });
-            });
-          });
+                )
+              })
+            })
+          })
         }}
       />
     </AsemicCanvas>
-  );
+  )
 }
