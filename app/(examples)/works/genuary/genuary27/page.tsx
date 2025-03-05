@@ -1,9 +1,9 @@
-"use client";
+'use client'
 // line that may or may not intersect
 
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import PointBrush from "@/libs/asemic/src/DashBrush";
-import { afterImage } from "@/libs/util/three/afterImage";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { afterImage } from '@/libs/util/three/afterImage'
 import {
   float,
   fract,
@@ -17,7 +17,7 @@ import {
   time,
   vec2,
   vec4,
-} from "three/tsl";
+} from 'three/tsl'
 
 // Inspired by brutalism
 export default function Genuary26() {
@@ -26,8 +26,8 @@ export default function Genuary26() {
       {(s) => (
         <PointBrush
           onInit={(b) => {
-            b.newCurve([0, 0, { translate: [0, 0.5 * s.h] }]);
-            b.repeat(10, ({ p }) => b.newPoints([p, 0]));
+            b.newCurve([0, 0, { translate: [0, 0.5 * s.h] }])
+            b.repeat(10, ({ p }) => b.newPoints([p, 0]))
           }}
           curvePosition={(input, { progress, lastFrame }) => {
             return vec4(
@@ -43,12 +43,12 @@ export default function Genuary26() {
                 s.h,
               ),
               lastFrame.zw,
-            );
+            )
           }}
           maxLength={5}
           spacing={0.5}
         />
       )}
     </Asemic>
-  );
+  )
 }

@@ -4,15 +4,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cdn.sanity.io'
-      }
-    ]
+        hostname: 'cdn.sanity.io',
+      },
+    ],
   },
   experimental: {
-    taint: true
+    taint: true,
   },
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
   async headers() {
     return [
@@ -21,12 +21,12 @@ const nextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*'
-          }
-        ]
-      }
+            value: '*',
+          },
+        ],
+      },
     ]
-  }
+  },
 }
 
 export default nextConfig

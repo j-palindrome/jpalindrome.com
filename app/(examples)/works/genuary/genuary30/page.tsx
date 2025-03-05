@@ -1,12 +1,12 @@
-"use client";
-import { useAsemic } from "@/libs/asemic/src/Asemic";
+'use client'
+import { useAsemic } from '@/libs/asemic/src/Asemic'
 // line that may or may not intersect
-import PointBrush from "@/libs/asemic/src/DashBrush";
-import { toTuple } from "@/libs/asemic/src/typeGuards";
+import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { toTuple } from '@/libs/asemic/src/typeGuards'
 
 // grid-based graphic design
 export default function Genuary30() {
-  const { h, mouse } = useAsemic();
+  const { h, mouse } = useAsemic()
 
   return (
     <PointBrush
@@ -39,7 +39,7 @@ export default function Genuary30() {
                 1,
                 {
                   rotate: p2,
-                  reset: "last",
+                  reset: 'last',
                   scale: b.noise([p2, b.time * 0.3]),
                   thickness: b.getRange(
                     b.noise([p2, b.time * 0.3], { advance: false }),
@@ -48,10 +48,10 @@ export default function Genuary30() {
                 },
               ]),
             )
-            .transform({ reset: "pop" });
-        });
+            .transform({ reset: 'pop' })
+        })
       }}
-      adjustEnds="loop"
+      adjustEnds='loop'
     />
-  );
+  )
 }

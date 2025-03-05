@@ -1,25 +1,25 @@
-"use client";
-import Background from "@/libs/asemic/src/Background";
-import LineBrush from "@/libs/asemic/src/LineBrush";
-import { TextureLoader } from "three";
-import { Asemic, AsemicCanvas } from "@/libs/asemic/src/Asemic";
-import img1 from "./assets/img1.png";
-import img10 from "./assets/img10.png";
-import img11 from "./assets/img11.png";
-import img12 from "./assets/img12.png";
-import img2 from "./assets/img2.png";
-import img3 from "./assets/img3.png";
-import img4 from "./assets/img4.png";
-import img5 from "./assets/img5.png";
-import img6 from "./assets/img6.png";
-import img7 from "./assets/img7.png";
-import img8 from "./assets/img8.png";
-import img9 from "./assets/img9.png";
-import "../../tailwind.css";
-import { useEffect, useState } from "react";
+'use client'
+import Background from '@/libs/asemic/src/components/Background'
+import LineBrush from '@/libs/asemic/src/components/LineBrush'
+import { TextureLoader } from 'three'
+import { Asemic, AsemicCanvas } from '@/libs/asemic/src/Asemic'
+import img1 from './assets/img1.png'
+import img10 from './assets/img10.png'
+import img11 from './assets/img11.png'
+import img12 from './assets/img12.png'
+import img2 from './assets/img2.png'
+import img3 from './assets/img3.png'
+import img4 from './assets/img4.png'
+import img5 from './assets/img5.png'
+import img6 from './assets/img6.png'
+import img7 from './assets/img7.png'
+import img8 from './assets/img8.png'
+import img9 from './assets/img9.png'
+import '../../tailwind.css'
+import { useEffect, useState } from 'react'
 
 function App() {
-  let [textures, setTextures] = useState();
+  let [textures, setTextures] = useState<any>()
   useEffect(() => {
     const newTextures = [
       img1,
@@ -34,9 +34,9 @@ function App() {
       img10,
       img11,
       img12,
-    ].map((tex) => new TextureLoader().load(tex.src));
-    setTextures(newTextures);
-  }, []);
+    ].map((tex) => new TextureLoader().load(tex.src))
+    setTextures(newTextures)
+  }, [])
 
   return (
     textures && (
@@ -46,27 +46,25 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[0]} />
-                <LineBrush
-                  onInit={(g) =>
-                    g.newText("a\nmans\nface").setCurves("all", {
+                <LineBrush>
+                  {(g) =>
+                    g.newText('a\nmans\nface').setCurves('all', {
                       left: 0,
                       middle: 0.75 * h,
                       width: 0.5,
                     })
                   }
-                ></LineBrush>
-                <LineBrush
-                  renderInit
-                  maxLength={5}
-                  onInit={(g) =>
+                </LineBrush>
+                <LineBrush renderInit maxLength={5}>
+                  {(g) =>
                     g
-                      .newText("mouth", {
+                      .newText('mouth', {
                         scale: (g.time % 1) + 0.01,
                         thickness: g.getRange((g.time % 1) ** 2, [1, 100]),
                       })
-                      .setCurves("all", { center: 0.5, middle: 0.5 * h })
+                      .setCurves('all', { center: 0.5, middle: 0.5 * h })
                   }
-                ></LineBrush>
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -74,12 +72,11 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[1]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) =>
+                <LineBrush renderInit>
+                  {(g) =>
                     g
                       .newText(
-                        "gaping at\nthe camera",
+                        'gaping at\nthe camera',
                         {
                           reset: true,
                           thickness: () =>
@@ -99,26 +96,26 @@ function App() {
                               }) * 0.01,
                           }),
                       )
-                      .setCurves("new", {
+                      .setCurves('new', {
                         width: 0.8,
                         center: 0.5,
                         middle: 0.5 * h,
                       })
                   }
-                />
-                <LineBrush
-                  onInit={(g) =>
+                </LineBrush>
+                <LineBrush>
+                  {(g) =>
                     g
                       .newText(
-                        "as if a tiger were\n     taking the moon down",
+                        'as if a tiger were\n     taking the moon down',
                         {
                           reset: true,
                           thickness: 5,
                         },
                       )
-                      .setCurves("new", { width: 0.7, top: 0.2 })
+                      .setCurves('new', { width: 0.7, top: 0.2 })
                   }
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -126,11 +123,10 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[2]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "joy",
+                      'joy',
                       {
                         thickness: () => g.getRandomWithin(5, 15),
                         scale: 0.5,
@@ -147,15 +143,15 @@ function App() {
                     )
 
                       .newText(
-                        "of being seen",
+                        'of being seen',
                         {
                           reset: true,
                           thickness: () => g.getRange(g.hash(), [1, 10]),
                         },
                         { width: 0.5, middle: 0.2, left: 0.12 },
-                      );
+                      )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -163,15 +159,14 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[3]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "and",
+                      'and',
                       { thickness: () => g.getRange(g.hash(), [1, 10]) },
                       { center: 0.46, middle: 0.78 * h, width: 0.5 },
                     ).newText(
-                      "seeing oneself",
+                      'seeing oneself',
                       { thickness: 1 },
                       { center: 0.5, width: 0.9, middle: 0.2 },
                       (i) =>
@@ -179,7 +174,7 @@ function App() {
                           .transform({
                             translate: [1, 0],
                             push: true,
-                            reset: "pop",
+                            reset: 'pop',
                           })
                           .transform({
                             scale: [
@@ -187,9 +182,9 @@ function App() {
                               g.getWave(1, { signed: true }) * (i % 2 ? -1 : 1),
                             ],
                           }),
-                    );
+                    )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -197,20 +192,19 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[4]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "and being unseen",
+                      'and being unseen',
                       {
                         color: [0, 0, 0],
                         thickness: 5,
                         alpha: () => g.noise([0, g.time]) * 0.25,
                       },
                       { center: 0.5, middle: 0.25 * h, width: 0.5 },
-                    );
+                    )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -218,21 +212,20 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[5]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "but what if the posterity of the camera self isolates\n                      behind that hall of mirrors",
+                      'but what if the posterity of the camera self isolates\n                      behind that hall of mirrors',
                       { thickness: 3 },
                       { left: 0, middle: 0.1, width: 0.9 },
                     )
                       .newText(
-                        "and the annotations on what we sought are the\n      reflections of",
+                        'and the annotations on what we sought are the\n      reflections of',
                         { reset: true, thickness: 3 },
                         { left: 0.3, width: 0.7, middle: 0.9 * h },
                       )
                       .newText(
-                        "ourselves",
+                        'ourselves',
                         {
                           alpha: () => g.getWaveNoise(1, {}),
                           thickness: 15,
@@ -242,9 +235,9 @@ function App() {
                           g.transform({
                             scale: g.getRange(g.getWaveNoise(1), [0.5, 1.5]),
                           }),
-                      );
+                      )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -252,21 +245,20 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[6]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "worth being decided already",
+                      'worth being decided already',
                       {},
                       { width: 0.8, middle: 0.2, left: 0 },
                       (i) => {
                         if (Math.random() < 0.2 && i) {
-                          g.transform({ translate: [0, 0.2] });
+                          g.transform({ translate: [0, 0.2] })
                         }
                       },
-                    );
+                    )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -274,20 +266,19 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[7]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "and an expanded field of motion",
+                      'and an expanded field of motion',
                       { thickness: g.getRange(g.getWave(1), [1, 5]) },
                       { width: 0.9, middle: 0.2 * h, center: 0.5 },
                       () =>
                         g.transform({
                           translate: [g.getRange(g.getWave(1), [-0.5, 1]), 0],
                         }),
-                    );
+                    )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -295,11 +286,10 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[8]} />
-                <LineBrush
-                  renderInit
-                  onInit={(g) => {
+                <LineBrush renderInit>
+                  {(g) => {
                     g.newText(
-                      "to dissolve at the\n   center of the\n     frame",
+                      'to dissolve at the\n   center of the\n     frame',
                       {
                         alpha: () => g.noise([g.time, 0]),
                         thickness: 5,
@@ -310,9 +300,9 @@ function App() {
                         g.transform({
                           scale: g.getRange(g.getWave(1), [0.8, 1]),
                         }),
-                    );
+                    )
                   }}
-                />
+                </LineBrush>
               </>
             )}
           </Asemic>
@@ -351,7 +341,7 @@ function App() {
         </AsemicCanvas>
       </>
     )
-  );
+  )
 }
 
-export default App;
+export default App

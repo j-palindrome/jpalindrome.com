@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import LineBrush from "@/libs/asemic/src/LineBrush";
-import StripeBrush from "@/libs/asemic/src/StripeBrush";
-import { gaussian } from "@/libs/util/three/gaussian";
-import { range } from "lodash";
-import { vec4 } from "three/tsl";
-import { useAsemic } from "@/libs/asemic/src/Asemic";
-import { Color } from "three";
+import LineBrush from '@/libs/asemic/src/LineBrush'
+import StripeBrush from '@/libs/asemic/src/components/StripeBrush'
+import { gaussian } from '@/libs/util/three/gaussian'
+import { range } from 'lodash'
+import { vec4 } from 'three/tsl'
+import { useAsemic } from '@/libs/asemic/src/Asemic'
+import { Color } from 'three'
 
 export default function Lines() {
-  const { h } = useAsemic();
-  const count = 15;
+  const { h } = useAsemic()
+  const count = 15
   return (
     <>
       {range(count).map((i) => (
         <StripeBrush
           key={i}
           pointColor={(input, { uv }) => {
-            return vec4(input.rgb, input.a.mul(gaussian(uv.y.sub(0.5))));
+            return vec4(input.rgb, input.a.mul(gaussian(uv.y.sub(0.5))))
           }}
           renderInit
           onInit={(g) =>
@@ -28,7 +28,7 @@ export default function Lines() {
                 alpha: 1 / count,
               })
               .repeat(2, ({ pComplete }) => {
-                const index = g.hash();
+                const index = g.hash()
                 g.newCurve({ translate: [pComplete * 0.6, 0] }).repeat(
                   5,
                   ({ pComplete }) => {
@@ -43,13 +43,13 @@ export default function Lines() {
                           )
                           .toArray(),
                       },
-                    ]);
+                    ])
                   },
-                );
+                )
               })
           }
         />
       ))}
     </>
-  );
+  )
 }

@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import PointBrush from "@/libs/asemic/src/DashBrush";
-import { afterImage } from "@/libs/util/three/afterImage";
-import { gaussianBlur } from "@/libs/util/three/effects";
-import { screenUV, select, time, uv, vec2, vec4 } from "three/tsl";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { afterImage } from '@/libs/util/three/afterImage'
+import { gaussianBlur } from '@/libs/util/three/effects'
+import { screenUV, select, time, uv, vec2, vec4 } from 'three/tsl'
 
 // Inspired by brutalism
 export default function Genuary23() {
   return (
     <Asemic
       postProcessing={(input, { scenePass }) => {
-        return afterImage(gaussianBlur(input, screenUV, vec2(15, 15)), 0.9);
+        return afterImage(gaussianBlur(input, screenUV, vec2(15, 15)), 0.9)
 
         // return input
         // return input
@@ -49,9 +49,9 @@ export default function Genuary23() {
               .fract()
           }
           spacing={1}
-          spacingType="count"
+          spacingType='count'
         />
       )}
     </Asemic>
-  );
+  )
 }

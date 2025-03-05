@@ -1,13 +1,13 @@
-"use client";
-import { useAsemic } from "@/libs/asemic/src/Asemic";
+'use client'
+import { useAsemic } from '@/libs/asemic/src/Asemic'
 // line that may or may not intersect
 
-import MeshBrush from "@/libs/asemic/src/LineBrush";
-import { toTuple } from "@/libs/asemic/src/typeGuards";
+import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { toTuple } from '@/libs/asemic/src/typeGuards'
 
 // grid-based graphic design
 export default function Genuary29() {
-  const { h, mouse } = useAsemic();
+  const { h, mouse } = useAsemic()
 
   return (
     <MeshBrush
@@ -15,14 +15,14 @@ export default function Genuary29() {
       renderInit
       maxLength={1}
       onInit={(b) => {
-        const { params } = b;
-        b.clear();
+        const { params } = b
+        b.clear()
         b.repeatGrid(params.grid, ({ p }) => {
           const mouseDistance = p
             .clone()
             .multiply({ x: 1, y: h })
             .sub(mouse)
-            .length();
+            .length()
           b.repeat(10, ({ p }) => {
             b.newCurve(
               {
@@ -42,10 +42,10 @@ export default function Genuary29() {
               [1, 1],
               [1, 0],
               [0, 0],
-            );
-          });
-        });
+            )
+          })
+        })
       }}
     />
-  );
+  )
 }

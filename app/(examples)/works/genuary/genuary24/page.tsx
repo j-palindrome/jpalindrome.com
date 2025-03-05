@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import MeshBrush from "@/libs/asemic/src/LineBrush";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import MeshBrush from '@/libs/asemic/src/components/LineBrush'
 
 // Inspired by brutalism
 export default function Genuary23() {
@@ -17,15 +17,15 @@ export default function Genuary23() {
                 scale: 0.5,
                 thickness: 10,
               }),
-            );
+            )
           }}
           onUpdate={(b) => {
-            b.curves.flat().forEach((p) => (p.thickness = Math.random() * 100));
+            b.curves.flat().forEach((p) => (p.thickness = Math.random() * 100))
           }}
           renderInit={500}
-          renderUpdate="cpu"
+          renderUpdate='cpu'
         />
       )}
     </Asemic>
-  );
+  )
 }

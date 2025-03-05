@@ -1,31 +1,31 @@
-"use client";
+'use client'
 // line that may or may not intersect
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import MeshBrush from "@/libs/asemic/src/LineBrush";
-import { bezier2 } from "@/libs/util/three/curves";
-import { positionLocal, vec2, vec4 } from "three/tsl";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { bezier2 } from '@/libs/util/three/curves'
+import { positionLocal, vec2, vec4 } from 'three/tsl'
 
 export default function Genuary26() {
   const words = [
-    "scroll",
-    "to",
-    "one",
-    "moment",
-    "without",
-    "unrecognized",
-    "feature",
-    "length",
-    "composite",
-    "organization",
-    "memory",
-    "unsettled",
-    "lengthwise",
-    "underfit",
-    "overenrolled",
-    "altogether",
-    "forlorn",
-    "mismanaged",
-  ];
+    'scroll',
+    'to',
+    'one',
+    'moment',
+    'without',
+    'unrecognized',
+    'feature',
+    'length',
+    'composite',
+    'organization',
+    'memory',
+    'unsettled',
+    'lengthwise',
+    'underfit',
+    'overenrolled',
+    'altogether',
+    'forlorn',
+    'mismanaged',
+  ]
   return (
     <Asemic>
       {(s) =>
@@ -45,7 +45,7 @@ export default function Genuary26() {
                     thickness: 3,
                     alpha: Math.random(),
                   },
-                );
+                )
               } else {
                 b.curves.flat().forEach((p) =>
                   p.add({
@@ -53,15 +53,15 @@ export default function Genuary26() {
                     y:
                       3 * b.hash(b.params.index) * (b.time - b.params.lastTime),
                   }),
-                );
+                )
                 if (b.curves[0][0].y > s.h) {
-                  b.params.index++;
+                  b.params.index++
                   b.curves.flat().forEach((p) => {
-                    p.sub({ x: 0, y: s.h + 0.2 });
-                    p.alpha = b.hash(b.params.index);
-                  });
+                    p.sub({ x: 0, y: s.h + 0.2 })
+                    p.alpha = b.hash(b.params.index)
+                  })
                 }
-                b.params.lastTime = b.time;
+                b.params.lastTime = b.time
               }
             }}
             pointColor={(p) => {
@@ -75,11 +75,11 @@ export default function Genuary26() {
                 )
                   .y.pow(3)
                   .mul(p.a),
-              );
+              )
             }}
           />
         ))
       }
     </Asemic>
-  );
+  )
 }

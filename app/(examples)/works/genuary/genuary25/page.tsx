@@ -1,18 +1,18 @@
-"use client";
+'use client'
 // line that may or may not intersect
 
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import MeshBrush from "@/libs/asemic/src/LineBrush";
-import { afterImage } from "@/libs/util/three/afterImage";
-import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
-import { uv } from "three/tsl";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { afterImage } from '@/libs/util/three/afterImage'
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
+import { uv } from 'three/tsl'
 
 // Inspired by brutalism
 export default function Genuary23() {
   return (
     <Asemic
       postProcessing={(input) => {
-        return bloom(input, 0.3).add(afterImage(input, 0.9));
+        return bloom(input, 0.3).add(afterImage(input, 0.9))
         // return input.add(afterImage(input, 0.9))
       }}
     >
@@ -21,7 +21,7 @@ export default function Genuary23() {
           <MeshBrush
             onInit={(b) => {
               if (b.time === 0) {
-                b.newCurve([0, 0, { thickness: 2 }], [0.5, 0.5]);
+                b.newCurve([0, 0, { thickness: 2 }], [0.5, 0.5])
               }
               b.newPoints([
                 0,
@@ -31,9 +31,9 @@ export default function Genuary23() {
                   reset: true,
                   thickness: b.getRandomWithin(2, 60),
                 },
-              ]);
+              ])
               if (b.curves[0].length > 10) {
-                b.curves[0].splice(0, 1);
+                b.curves[0].splice(0, 1)
               }
             }}
             renderInit={true}
@@ -44,5 +44,5 @@ export default function Genuary23() {
         </>
       )}
     </Asemic>
-  );
+  )
 }

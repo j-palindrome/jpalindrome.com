@@ -1,13 +1,13 @@
-"use client";
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import { PointBuilder } from "@/libs/asemic/src/PointBuilder";
-import { easeInOutSine } from "@/libs/util/three/easing";
-import { random } from "lodash";
-import { Vector2 } from "three";
-import { mix, time } from "three/tsl";
+'use client'
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import { PointBuilder } from '@/libs/asemic/src/builders/PointBuilder'
+import { easeInOutSine } from '@/libs/util/three/easing'
+import { random } from 'lodash'
+import { Vector2 } from 'three'
+import { mix, time } from 'three/tsl'
 
 export default function Genuary6() {
-  const poem = ["sometrees", "amazing"];
+  const poem = ['sometrees', 'amazing']
   return (
     <Asemic
       dimensions={[1080, 1920]}
@@ -26,7 +26,7 @@ export default function Genuary6() {
                   .mod(2)
                   .div(2),
               ),
-            );
+            )
           },
           curveFrag: (input, info) => {
             return mix(
@@ -36,12 +36,12 @@ export default function Genuary6() {
                 .sub(info.settings.start / 1000)
                 .mod(2)
                 .div(2),
-            );
+            )
           },
         }).repeat(2, ({ i }) => {
           b.repeat(poem[i].length, ({ i: j }) => {
             b.newGroup((g) => {
-              g.transform({ start: j * 250 });
+              g.transform({ start: j * 250 })
               g.repeat(1, () => {
                 // const point = g.getRandomWithin([0.5, 0, { reset: true }], [0.2, 0])
                 // const resetTransform: PreTransformData =
@@ -84,7 +84,7 @@ export default function Genuary6() {
                               : random(-0.08, 0.08),
                         scale: 0.9,
                       })
-                      .transform({ translate: [0, 1] });
+                      .transform({ translate: [0, 1] })
                   })
                   .text(poem[i][j], {
                     strength: 0,
@@ -94,12 +94,12 @@ export default function Genuary6() {
                     scale: new PointBuilder([0.07, 0.07]).divide(
                       g.currentTransform.scale,
                     ),
-                  });
-              });
-            });
-          });
-        });
+                  })
+              })
+            })
+          })
+        })
       }}
     />
-  );
+  )
 }

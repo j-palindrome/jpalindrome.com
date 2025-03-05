@@ -1,8 +1,8 @@
-"use client";
+'use client'
 // line that may or may not intersect
 
-import { Asemic } from "@/libs/asemic/src/Asemic";
-import PointBrush from "@/libs/asemic/src/DashBrush";
+import { Asemic } from '@/libs/asemic/src/Asemic'
+import PointBrush from '@/libs/asemic/src/components/DashBrush'
 import {
   fract,
   hash,
@@ -14,7 +14,7 @@ import {
   time,
   vec2,
   vec4,
-} from "three/tsl";
+} from 'three/tsl'
 
 // Inspired by brutalism
 export default function Genuary26() {
@@ -24,7 +24,7 @@ export default function Genuary26() {
         <PointBrush
           renderInit
           onInit={(b) => {
-            b.clear();
+            b.clear()
             const curve: Coordinate[] = [
               [0.02, 0.98],
               [0.89, 0.72],
@@ -33,13 +33,13 @@ export default function Genuary26() {
               [0.36, 0.24],
               [0.63, 0.11],
               [0.01, 0.0],
-            ];
+            ]
             b.transform({
               translate: [0, s.h],
               scale: [s.h, 1 / s.h],
               rotate: -0.25,
               push: true,
-            });
+            })
             b.newCurve(
               { translate: [0.5, 0], scale: [0.5, s.h] },
               ...curve.map(
@@ -53,10 +53,10 @@ export default function Genuary26() {
                     },
                   ] as any,
               ),
-            );
+            )
             b.newCurve(
               {
-                reset: "last",
+                reset: 'last',
                 translate: [0.5, 0],
                 scale: [-0.5, s.h],
               },
@@ -71,7 +71,7 @@ export default function Genuary26() {
                     },
                   ] as any,
               ),
-            );
+            )
           }}
           curvePosition={(pos, info) => {
             return select(
@@ -83,12 +83,12 @@ export default function Genuary26() {
                 ),
                 pos.zw,
               ),
-            );
+            )
           }}
           pointThickness={(t) => t.mul(hash(range(0, 100).add(time.mul(60))))}
           spacing={0.5}
         />
       )}
     </Asemic>
-  );
+  )
 }
