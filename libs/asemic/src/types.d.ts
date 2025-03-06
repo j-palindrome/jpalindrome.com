@@ -1,7 +1,7 @@
 import { Texture, TypedArray, Vector2 } from 'three'
 import Backend from 'three/src/renderers/common/Backend.js'
 import { float, mrt, varying, vec2, vec4 } from 'three/tsl'
-import { GroupBuilder } from './builders/GroupBuilder'
+import GroupBuilder from './builders/GroupBuilder'
 import BrushBuilder from './builders/BrushBuilder'
 
 declare global {
@@ -130,6 +130,10 @@ declare global {
         | CoordinateSettings[T]
         | ((progress: [number, number]) => CoordinateSettings[T])
     }>
+
+  type BrushProps<T extends BrushTypes> = {
+    children: ConstructorParameters<typeof GroupBuilder>[0]
+  } & Partial<BrushBuilder<T>['settings']>
 }
 
 declare module 'three/webgpu' {

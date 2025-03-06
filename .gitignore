@@ -8,6 +8,7 @@ sanity/node_modules
 .pnp.js
 .yarn/install-state.gz
 asemic/examples
+public/works/aframe/assets/*
 
 # testing
 /coverage
@@ -41,3 +42,6 @@ dist
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/works/aframe/assets/output.webm
+public/works/aframe/assets/into-oblivion-muted.mp4
+public/works/aframe/assets/a-bender-muted.webm

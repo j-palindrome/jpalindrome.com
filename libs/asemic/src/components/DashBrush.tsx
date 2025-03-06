@@ -24,18 +24,11 @@ import {
   WebGPURenderer,
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
-import { useCurve } from '../util/useControlPoints'
+// import { useCurve } from '../util/useControlPoints'
 import BrushBuilder from '../builders/BrushBuilder'
 
 type VectorList = [number, number]
 type Vector3List = [number, number, number]
-export type Jitter = {
-  size?: VectorList
-  position?: VectorList
-  hsl?: Vector3List
-  a?: number
-  rotation?: number
-}
 
 extend({ StorageInstancedBufferAttribute })
 declare module '@react-three/fiber' {
@@ -53,7 +46,7 @@ export default function DashBrush({
   BrushBuilder<'dash'>['settings']
 >) {
   const group = new GroupBuilder(children)
-  const builder = new BrushBuilder('dash', settings)
+  // const builder = new BrushBuilder('dash', settings)
   // @ts-ignore
   const gl = useThree(({ gl }) => gl as WebGPURenderer)
 

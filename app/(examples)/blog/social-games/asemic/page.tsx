@@ -1,13 +1,12 @@
 'use client'
-import { AsemicCanvas, Asemic } from '@/libs/asemic/src/Asemic'
-import LineBrush from '@/libs/asemic/src/components/LineBrush'
-import { Canvas } from '@react-three/fiber'
+import { AsemicCanvas, Asemic, DotBrush } from '@asemic'
+import { LineBrush } from '@asemic'
 
 export default function Page() {
   return (
     <AsemicCanvas className='!h-screen !w-screen'>
       <Asemic>
-        <LineBrush renderInit>{(g) => g.newCurve([0, 0], [1, 1])}</LineBrush>
+        <DotBrush renderInit>{(g) => g.newCurve([0, 0], [1, 1])}</DotBrush>
       </Asemic>
     </AsemicCanvas>
   )

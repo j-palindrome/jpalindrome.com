@@ -13,13 +13,6 @@ import BrushBuilder from '../builders/BrushBuilder'
 
 type VectorList = [number, number]
 type Vector3List = [number, number, number]
-export type Jitter = {
-  size?: VectorList
-  position?: VectorList
-  hsl?: Vector3List
-  a?: number
-  rotation?: number
-}
 
 extend({ StorageInstancedBufferAttribute })
 declare module '@react-three/fiber' {

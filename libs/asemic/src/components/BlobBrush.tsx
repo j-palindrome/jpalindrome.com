@@ -1,4 +1,4 @@
-import { extend, ThreeElement, useThree } from '@react-three/fiber'
+import { extend, ThreeElement, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import {
@@ -19,7 +19,6 @@ import {
   WebGPURenderer,
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
-import { useCurve } from '../util/useControlPoints'
 import { range } from 'lodash'
 import BrushBuilder from '../builders/BrushBuilder'
 
@@ -42,35 +41,66 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function BlobBrush({
-  children,
-  ...settings
-}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
-  BrushBuilder<'blob'>['settings']
->) {
-  const group = new GroupBuilder(children)
-  const builder = new BrushBuilder('blob', settings)
-  // @ts-ignore
-  const gl = useThree(({ gl }) => gl as WebGPURenderer)
-
-  const { getBezier, instancesPerCurve, hooks } = useCurve(group, builder)
-  const { material, geometry } = useMemo(() => {
+export class BlobBrushBuilder extends BrushBuilder<'blob'> {
+  protected defaultBrushSettings: {
+    type: 'blob'
+    centerMode: 'center' | 'first' | 'betweenEnds'
+  } = { type: 'blob', centerMode: 'center' }
+  protected onFrame() {}
+  protected onDraw() {
+    const array = this.info.centerPoints.array as THREE.Vector2[]
+    const colorArray = this.info.centerColors.array as THREE.Vector4[]
+    for (let i = 0; i < this.settings.maxCurves; i++) {
+      switch (this.settings.centerMode) {
+        case 'center':
+          const bounds = this.group.getBounds(this.group.curves[i])
+          array[i].copy(bounds.center)
+          colorArray[i].set(
+            ...this.group.curves[i][0].color,
+            this.group.curves[i][0].alpha,
+          )
+          break
+        case 'first':
+          array[i].copy(this.group.curves[i][0])
+          colorArray[i].set(
+            ...this.group.curves[i][0].color,
+            this.group.curves[i][0].alpha,
+          )
+          break
+        case 'betweenEnds':
+          const lastPoint =
+            this.group.curves[i][this.group.curves[i].length - 1]
+          array[i].lerpVectors(this.group.curves[i][0], lastPoint, 0.5)
+          colorArray[i].set(
+            ...this.group.curves[i][0].color,
+            this.group.curves[i][0].alpha,
+          )
+          const lastColor = new THREE.Vector4(
+            ...lastPoint.color,
+            lastPoint.alpha,
+          )
+          colorArray[i].lerp(lastColor, 0.5)
+          break
+      }
+    }
+  }
+  protected onInit() {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3))
     const indexes: number[] = []
 
-    for (let curveI = 0; curveI < builder.settings.maxCurves; curveI++) {
-      for (let i = 1; i < instancesPerCurve - 1; i++) {
+    for (let curveI = 0; curveI < this.settings.maxCurves; curveI++) {
+      for (let i = 1; i < this.info.instancesPerCurve - 1; i++) {
         indexes.push(
           curveI,
-          curveI + i + builder.settings.maxCurves,
-          curveI + i + 1 + builder.settings.maxCurves,
+          curveI + i + this.settings.maxCurves,
+          curveI + i + 1 + this.settings.maxCurves,
         )
       }
       indexes.push(
         curveI,
-        curveI + 1 + builder.settings.maxCurves,
-        curveI + instancesPerCurve - 1 + builder.settings.maxCurves,
+        curveI + 1 + this.settings.maxCurves,
+        curveI + this.info.instancesPerCurve - 1 + this.settings.maxCurves,
       )
     }
     console.log(indexes)
@@ -83,7 +113,7 @@ export default function BlobBrush({
       side: THREE.DoubleSide,
       color: 'white',
     })
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
 
     const position = vec2().toVar('thisPosition')
     const color = varying(vec4(), 'color')
@@ -91,64 +121,25 @@ export default function BlobBrush({
     const vUv = varying(vec2(), 'vUv')
 
     const centerPoints = uniformArray(
-      range(builder.settings.maxCurves).map(() => new THREE.Vector2()),
+      range(this.settings.maxCurves).map(() => new THREE.Vector2()),
       'vec2',
     )
     const centerColors = uniformArray(
-      range(builder.settings.maxCurves).map(() => new THREE.Vector4()),
+      range(this.settings.maxCurves).map(() => new THREE.Vector4()),
       'vec4',
     )
-    const updateCenterPoints = () => {
-      const array = centerPoints.array as THREE.Vector2[]
-      const colorArray = centerColors.array as THREE.Vector4[]
-      for (let i = 0; i < builder.settings.maxCurves; i++) {
-        switch (builder.settings.centerMode) {
-          case 'center':
-            const bounds = group.getBounds(group.curves[i])
-            array[i].copy(bounds.center)
-            colorArray[i].set(
-              ...group.curves[i][0].color,
-              group.curves[i][0].alpha,
-            )
-            break
-          case 'first':
-            array[i].copy(group.curves[i][0])
-            colorArray[i].set(
-              ...group.curves[i][0].color,
-              group.curves[i][0].alpha,
-            )
-            break
-          case 'betweenEnds':
-            const lastPoint = group.curves[i][group.curves[i].length - 1]
-            array[i].lerpVectors(group.curves[i][0], lastPoint, 0.5)
-            colorArray[i].set(
-              ...group.curves[i][0].color,
-              group.curves[i][0].alpha,
-            )
-            const lastColor = new THREE.Vector4(
-              ...lastPoint.color,
-              lastPoint.alpha,
-            )
-            colorArray[i].lerp(lastColor, 0.5)
-            break
-        }
-      }
-    }
-    hooks.onInit = () => {
-      updateCenterPoints()
-    }
 
     const main = Fn(() => {
-      If(vertexIndex.lessThan(builder.settings.maxCurves), () => {
+      If(vertexIndex.lessThan(this.settings.maxCurves), () => {
         position.assign(centerPoints.element(vertexIndex))
         color.assign(centerColors.element(vertexIndex))
         vUv.assign(vec2(0, 0))
       }).Else(() => {
-        getBezier(
+        this.getBezier(
           vertexIndex
-            .sub(builder.settings.maxCurves)
+            .sub(this.settings.maxCurves)
             .toFloat()
-            .div(instancesPerCurve - 0.999),
+            .div(this.info.instancesPerCurve - 0.999),
           position,
           {
             color,
@@ -158,9 +149,9 @@ export default function BlobBrush({
         vUv.assign(
           vec2(
             vertexIndex
-              .sub(builder.settings.maxCurves)
+              .sub(this.settings.maxCurves)
               .toFloat()
-              .div(instancesPerCurve - 0.999),
+              .div(this.info.instancesPerCurve - 0.999),
             1,
           ),
         )
@@ -172,31 +163,49 @@ export default function BlobBrush({
     material.positionNode = main()
 
     material.colorNode = Fn(() =>
-      builder.settings.pointColor(varying(vec4(), 'color'), {
+      this.settings.pointColor(varying(vec4(), 'color'), {
         progress,
-        builder,
+        builder: this.group,
         uv: vUv,
       }),
     )()
 
     material.needsUpdate = true
 
-    return {
+    const mesh = new THREE.Mesh(geometry, material)
+    this.scene.add(mesh)
+
+    Object.assign(this.info, {
       material,
       geometry,
-    }
-  }, [builder])
+      mesh,
+      centerPoints,
+      centerColors,
+    })
+  }
+  protected onDispose() {
+    this.scene.remove(this.info.mesh)
+    this.info.material.dispose()
+    this.info.geometry.dispose()
+  }
+}
 
+export default function BlobBrush({
+  children,
+  ...settings
+}: BrushProps<'blob'>) {
+  const group = new GroupBuilder(children)
+  // @ts-ignore
+  const renderer = useThree(({ gl }) => gl as WebGPURenderer)
   const scene = useThree(({ scene }) => scene)
+  const builder = new BlobBrushBuilder(settings, { group, renderer, scene })
+  useFrame((state) => {
+    builder.frame(state.clock.elapsedTime)
+  })
   useEffect(() => {
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
     return () => {
-      scene.remove(mesh)
-      material.dispose()
-      geometry.dispose()
+      builder.dispose()
     }
-  }, [builder])
-
+  }, [])
   return <></>
 }

@@ -1,4 +1,4 @@
-import { extend, ThreeElement, useThree } from '@react-three/fiber'
+import { extend, ThreeElement, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import {
@@ -27,19 +27,11 @@ import {
   WebGPURenderer,
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
-import { useCurve, usePoints } from '../util/useControlPoints'
 import { gaussian } from '../util/gaussian'
 import BrushBuilder from '../builders/BrushBuilder'
 
 type VectorList = [number, number]
 type Vector3List = [number, number, number]
-export type Jitter = {
-  size?: VectorList
-  position?: VectorList
-  hsl?: Vector3List
-  a?: number
-  rotation?: number
-}
 
 extend({ StorageInstancedBufferAttribute })
 declare module '@react-three/fiber' {
@@ -50,34 +42,30 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function DotBrush({
-  children,
-  ...settings
-}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
-  BrushBuilder<'dot'>['settings']
->) {
-  const group = new GroupBuilder(children)
-  const builder = new BrushBuilder('dot', settings)
-  // @ts-ignore
-  const gl = useThree(({ gl }) => gl as WebGPURenderer)
+export class DotBrushBuilder extends BrushBuilder<'dot'> {
+  protected defaultBrushSettings: { type: 'dot' }
 
-  const { curveColorArray, curvePositionArray } = usePoints(group, builder)
+  protected onDispose() {
+    this.scene.remove(this.info.mesh)
+    this.info.mesh.dispose()
+  }
 
-  const { mesh } = useMemo(() => {
-    const MAX_INSTANCE_COUNT =
-      builder.settings.maxPoints * builder.settings.maxCurves
+  protected onDraw() {}
+
+  protected onInit() {
+    const MAX_INSTANCE_COUNT = this.settings.maxPoints * this.settings.maxCurves
 
     const geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
-    geometry.translate(builder.settings.align - 0.5, 0.5, 0)
+    geometry.translate(this.settings.align - 0.5, 0.5, 0)
     const material = new SpriteNodeMaterial({
       transparent: true,
       depthWrite: false,
       // blending: THREE.AdditiveBlending
     })
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
     const mesh = new THREE.InstancedMesh(geometry, material, MAX_INSTANCE_COUNT)
 
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
 
     const thickness = float(0).toVar()
     const color = varying(vec4(), 'color')
@@ -85,50 +73,61 @@ export default function DotBrush({
 
     const position = vec2().toVar()
     material.positionNode = Fn(() => {
-      progress.assign(instanceIndex.toFloat().div(builder.settings.maxPoints))
-      position.assign(curvePositionArray.element(instanceIndex).xy)
+      progress.assign(instanceIndex.toFloat().div(this.settings.maxPoints))
+      position.assign(this.info.curvePositionArray.element(instanceIndex).xy)
       thickness.assign(
-        curvePositionArray.element(instanceIndex).w.div(screenSize.x),
+        this.info.curvePositionArray.element(instanceIndex).w.div(screenSize.x),
       )
-      color.assign(curveColorArray.element(instanceIndex))
+      color.assign(this.info.curveColorArray.element(instanceIndex))
 
       return vec4(
-        builder.settings.pointPosition(
-          position.sub(vec2(0, thickness.div(2))),
-          {
-            progress,
-            builder,
-          },
-        ),
+        this.settings.pointPosition(position.sub(vec2(0, thickness.div(2))), {
+          progress,
+          builder: this.group,
+        }),
         0,
         1,
       )
     })()
 
     material.scaleNode = vec2(thickness, thickness)
-    material.colorNode = builder.settings.pointColor(
+    material.colorNode = this.settings.pointColor(
       vec4(color.xyz, gaussian(uv().sub(0.5).length()).mul(color.a)),
       {
         progress,
-        builder,
+        builder: this.group,
         uv: varying(vec2(progress, 0.5), 'uv'),
       },
     )
     material.needsUpdate = true
 
-    return {
-      mesh,
-    }
-  }, [builder])
+    this.scene.add(mesh)
+    this.info.mesh = mesh
+  }
 
-  const scene = useThree(({ scene }) => scene)
+  protected onFrame() {}
+}
+
+export default function DotBrush({
+  children,
+  ...settings
+}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
+  BrushBuilder<'dot'>['settings']
+>) {
+  // @ts-ignore
+  const renderer = useThree((state) => state.gl as WebGPURenderer)
+  const scene = useThree((state) => state.scene)
+  const group = new GroupBuilder(children)
+  const builder = useMemo(
+    () => new DotBrushBuilder(settings, { renderer, group, scene }),
+    [],
+  )
+  useFrame((state) => {
+    builder.frame(state.clock.elapsedTime)
+  })
   useEffect(() => {
-    scene.add(mesh)
-    return () => {
-      scene.remove(mesh)
-      mesh.dispose()
-    }
-  }, [builder])
+    builder.dispose()
+  }, [])
 
   return <></>
 }
