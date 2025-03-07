@@ -1,4 +1,4 @@
-import { extend, ThreeElement, useThree } from '@react-three/fiber'
+import { extend, ThreeElement, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import {
@@ -39,32 +39,29 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function DashBrush({
-  children,
-  ...settings
-}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
-  BrushBuilder<'dash'>['settings']
->) {
-  const group = new GroupBuilder(children)
-  // const builder = new BrushBuilder('dash', settings)
-  // @ts-ignore
-  const gl = useThree(({ gl }) => gl as WebGPURenderer)
-
-  const { getBezier, instancesPerCurve, hooks } = useCurve(group, builder)
-
-  const { mesh } = useMemo(() => {
-    const MAX_INSTANCE_COUNT = instancesPerCurve * builder.settings.maxCurves
+export class DashBrushBuilder extends BrushBuilder<'dash'> {
+  protected defaultBrushSettings: { type: 'dash'; dashSize: number } = {
+    type: 'dash',
+    dashSize: 3,
+  }
+  protected onFrame() {
+    this.renderer.compute(this.info.updateCurveLengths)
+  }
+  protected onDraw() {}
+  protected onInit() {
+    const MAX_INSTANCE_COUNT =
+      this.info.instancesPerCurve * this.settings.maxCurves
 
     const geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
-    geometry.translate(builder.settings.align - 0.5, 0.5, 0)
+    geometry.translate(this.settings.align - 0.5, 0.5, 0)
     const material = new SpriteNodeMaterial({
       transparent: true,
       depthWrite: false,
     })
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
     const mesh = new THREE.InstancedMesh(geometry, material, MAX_INSTANCE_COUNT)
 
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
 
     const rotation = float(0).toVar()
     const thickness = float(0).toVar()
@@ -72,27 +69,29 @@ export default function DashBrush({
     const progress = varying(float(), 'progress')
 
     const tAttribute = instancedArray(
-      new Float32Array(instancesPerCurve * builder.settings.maxCurves),
+      new Float32Array(this.info.instancesPerCurve * this.settings.maxCurves),
       'float',
     )
 
     const updateCurveLengths = Fn(() => {
-      const curveIndex = instanceIndex.toFloat().div(instancesPerCurve)
+      const curveIndex = instanceIndex
+        .toFloat()
+        .div(this.info.instancesPerCurve)
       const curveStart = floor(curveIndex)
-      const targetLength = curveIndex.fract().mul(builder.settings.maxLength)
+      const targetLength = curveIndex.fract().mul(this.settings.maxLength)
       const found = int(0).toVar()
       const totalLength = float(0).toVar()
       const lastEnd = float(0).toVar()
       const lastPoint = vec2(0, 0).toVar()
       const thisPoint = vec2(0, 0).toVar()
-      getBezier(curveIndex, thisPoint)
+      this.getBezier(curveIndex, thisPoint)
 
       If(curveIndex.fract().equal(0), () => {
         tAttribute.element(instanceIndex).assign(curveIndex)
         Return()
       })
 
-      getBezier(curveStart, thisPoint)
+      this.getBezier(curveStart, thisPoint)
       const count = 10
       // @ts-expect-error
       Loop({ start: 1, end: count }, ({ i }) => {
@@ -102,7 +101,7 @@ export default function DashBrush({
             .div(count - 1)
             .mul(0.999),
         )
-        getBezier(t, thisPoint)
+        this.getBezier(t, thisPoint)
         lastEnd.assign(totalLength)
         totalLength.addAssign(thisPoint.sub(lastPoint).length())
         If(totalLength.greaterThanEqual(targetLength), () => {
@@ -127,13 +126,13 @@ export default function DashBrush({
 
       return undefined as any
     })().compute(
-      instancesPerCurve * builder.settings.maxCurves,
+      this.info.instancesPerCurve * this.settings.maxCurves,
       undefined as any,
     )
 
     const position = vec2().toVar()
     material.positionNode = Fn(() => {
-      getBezier(tAttribute.element(instanceIndex), position, {
+      this.getBezier(tAttribute.element(instanceIndex), position, {
         rotation,
         thickness,
         color,
@@ -141,9 +140,9 @@ export default function DashBrush({
       })
 
       return vec4(
-        builder.settings.pointPosition(position, {
+        this.settings.pointPosition(position, {
           progress,
-          builder,
+          builder: this.group,
         }),
         0,
         1,
@@ -153,37 +152,49 @@ export default function DashBrush({
 
     material.scaleNode = vec2(
       thickness,
-      float(builder.settings.dashSize).div(screenSize.x),
+      float(this.settings.dashSize).div(screenSize.x),
     )
-    material.colorNode = builder.settings.pointColor(color, {
+    material.colorNode = this.settings.pointColor(color, {
       progress,
-      builder,
+      builder: this.group,
       uv: varying(vec2(progress, 0.5), 'uv'),
     })
     material.needsUpdate = true
-    hooks.onUpdate = () => {
-      gl.compute(updateCurveLengths)
-    }
-    hooks.onInit = () => {
-      gl.compute(updateCurveLengths)
-    }
+    this.scene.add(mesh)
 
-    return {
+    Object.assign(this.info, {
       mesh,
       material,
       geometry,
       updateCurveLengths,
-    }
-  }, [builder])
+    })
+  }
 
-  const scene = useThree(({ scene }) => scene)
+  protected onDispose() {
+    this.info.material.dispose()
+    this.info.geometry.dispose()
+    this.scene.remove(this.info.mesh)
+  }
+}
+
+export default function DashBrush({
+  children,
+  ...settings
+}: BrushProps<'dash'>) {
+  // @ts-ignore
+  const renderer = useThree((state) => state.gl as WebGPURenderer)
+  const scene = useThree((state) => state.scene)
+  const group = new GroupBuilder(children)
+  const builder = useMemo(
+    () => new DashBrushBuilder(settings, { renderer, group, scene }),
+    [],
+  )
+  useFrame((state) => {
+    this.frame(state.clock.elapsedTime)
+  })
   useEffect(() => {
-    scene.add(mesh)
-    return () => {
-      scene.remove(mesh)
-      mesh.dispose()
-    }
-  }, [builder])
+    this.dispose()
+  }, [])
 
   return <></>
 }

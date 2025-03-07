@@ -1,4 +1,4 @@
-import { extend, ThreeElement, useThree } from '@react-three/fiber'
+import { extend, ThreeElement, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { float, Fn, select, varying, vec2, vec4, vertexIndex } from 'three/tsl'
@@ -8,11 +8,7 @@ import {
   WebGPURenderer,
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
-import { useCurve } from '../util/useControlPoints'
 import BrushBuilder from '../builders/BrushBuilder'
-
-type VectorList = [number, number]
-type Vector3List = [number, number, number]
 
 extend({ StorageInstancedBufferAttribute })
 declare module '@react-three/fiber' {
@@ -23,25 +19,19 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function StripeBrush({
-  children,
-  ...settings
-}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
-  BrushBuilder<'stripe'>['settings']
->) {
-  const group = new GroupBuilder(children)
-  const builder = new BrushBuilder('stripe', settings)
-  const { getBezier, instancesPerCurve } = useCurve(group, builder)
-
-  const { material, geometry } = useMemo(() => {
+export class StripeBrushBuilder extends BrushBuilder<'stripe'> {
+  protected defaultBrushSettings: { type: 'stripe' } = { type: 'stripe' }
+  protected onFrame() {}
+  protected onDraw() {}
+  protected onInit() {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3))
     const indexGuide = [0, 1, 2, 1, 2, 3]
 
     let currentIndex = 0
     const indexes: number[] = []
-    for (let i = 0; i < builder.settings.maxCurves; i++) {
-      for (let i = 0; i < instancesPerCurve - 1; i++) {
+    for (let i = 0; i < this.settings.maxCurves; i++) {
+      for (let i = 0; i < this.info.instancesPerCurve - 1; i++) {
         indexes.push(...indexGuide.map((x) => x + currentIndex))
         currentIndex += 2
       }
@@ -55,7 +45,7 @@ export default function StripeBrush({
       side: THREE.DoubleSide,
       color: 'white',
     })
-    material.mrtNode = builder.settings.renderTargets
+    material.mrtNode = this.settings.renderTargets
 
     const position = vec2().toVar('thisPosition')
     const rotation = float(0).toVar('rotation')
@@ -70,14 +60,14 @@ export default function StripeBrush({
       // 0 -> 1 = 0 -> 1, 1 - 2 = 2 -> 3, 2 - 3 = 4 - 5
       const thisProgress = vertexIndex
         .toFloat()
-        .div(instancesPerCurve - 0.999)
+        .div(this.info.instancesPerCurve - 0.999)
         .fract()
       const curveIndexStart = vertexIndex
-        .div(instancesPerCurve)
+        .div(this.info.instancesPerCurve)
         .mul(2)
         .add(select(vertexIndex.modInt(2).equal(0), 0, 1))
 
-      getBezier(thisProgress.add(curveIndexStart), position, {
+      this.info.getBezier(thisProgress.add(curveIndexStart), position, {
         rotation,
         thickness,
         color,
@@ -86,7 +76,7 @@ export default function StripeBrush({
 
       vUv.assign(
         vec2(
-          vertexIndex.toFloat().div(instancesPerCurve),
+          vertexIndex.toFloat().div(this.info.instancesPerCurve),
           select(vertexIndex.modInt(2).equal(0), 0, 1),
         ),
       )
@@ -96,31 +86,47 @@ export default function StripeBrush({
     material.positionNode = main()
 
     material.colorNode = Fn(() =>
-      builder.settings.pointColor(varying(vec4(), 'color'), {
+      this.settings.pointColor(varying(vec4(), 'color'), {
         progress,
-        builder,
+        builder: this.group,
         uv: vUv,
       }),
     )()
 
     material.needsUpdate = true
-
-    return {
+    const mesh = new THREE.Mesh(geometry, material)
+    Object.assign(this.info, {
       material,
       geometry,
-    }
-  }, [builder])
+      mesh,
+    })
+  }
 
-  const scene = useThree(({ scene }) => scene)
+  protected onDispose() {
+    this.info.material.dispose()
+    this.info.geometry.dispose()
+    this.scene.remove(this.info.mesh)
+  }
+}
+
+export default function StripeBrush({
+  children,
+  ...settings
+}: BrushProps<'stripe'>) {
+  // @ts-ignore
+  const renderer = useThree((state) => state.gl as WebGPURenderer)
+  const scene = useThree((state) => state.scene)
+  const group = new GroupBuilder(children)
+  const builder = useMemo(
+    () => new StripeBrushBuilder(settings, { renderer, group, scene }),
+    [],
+  )
+  useFrame((state) => {
+    builder.frame(state.clock.elapsedTime)
+  })
   useEffect(() => {
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
-    return () => {
-      scene.remove(mesh)
-      material.dispose()
-      geometry.dispose()
-    }
-  }, [builder])
+    builder.dispose()
+  }, [])
 
   return <></>
 }
