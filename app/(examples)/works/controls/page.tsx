@@ -46,7 +46,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[0]} />
-                <LineBrush>
+                <Brush type='line'>
                   {(g) =>
                     g.newText('a\nmans\nface').setCurves('all', {
                       left: 0,
@@ -54,8 +54,8 @@ function App() {
                       width: 0.5,
                     })
                   }
-                </LineBrush>
-                <LineBrush renderInit maxLength={5}>
+                </Brush>
+                <Brush type='line' renderInit maxLength={5}>
                   {(g) =>
                     g
                       .newText('mouth', {
@@ -64,7 +64,7 @@ function App() {
                       })
                       .setCurves('all', { center: 0.5, middle: 0.5 * h })
                   }
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -72,7 +72,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[1]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) =>
                     g
                       .newText(
@@ -102,8 +102,8 @@ function App() {
                         middle: 0.5 * h,
                       })
                   }
-                </LineBrush>
-                <LineBrush>
+                </Brush>
+                <Brush type='line'>
                   {(g) =>
                     g
                       .newText(
@@ -115,7 +115,7 @@ function App() {
                       )
                       .setCurves('new', { width: 0.7, top: 0.2 })
                   }
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -123,7 +123,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[2]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'joy',
@@ -151,7 +151,7 @@ function App() {
                         { width: 0.5, middle: 0.2, left: 0.12 },
                       )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -159,7 +159,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[3]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'and',
@@ -184,7 +184,7 @@ function App() {
                           }),
                     )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -192,7 +192,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[4]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'and being unseen',
@@ -204,7 +204,7 @@ function App() {
                       { center: 0.5, middle: 0.25 * h, width: 0.5 },
                     )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -212,7 +212,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[5]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'but what if the posterity of the camera self isolates\n                      behind that hall of mirrors',
@@ -237,7 +237,7 @@ function App() {
                           }),
                       )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -245,7 +245,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[6]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'worth being decided already',
@@ -258,7 +258,7 @@ function App() {
                       },
                     )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -266,7 +266,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[7]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'and an expanded field of motion',
@@ -278,7 +278,7 @@ function App() {
                         }),
                     )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -286,7 +286,7 @@ function App() {
             {({ h }) => (
               <>
                 <Background map={textures[8]} />
-                <LineBrush renderInit>
+                <Brush type='line' renderInit>
                   {(g) => {
                     g.newText(
                       'to dissolve at the\n   center of the\n     frame',
@@ -302,7 +302,7 @@ function App() {
                         }),
                     )
                   }}
-                </LineBrush>
+                </Brush>
               </>
             )}
           </Asemic>
@@ -310,7 +310,7 @@ function App() {
           {({ h }) => (
             <>
               <Background map={textures[9]} />
-              <LineBrush onInit={g => {}} />
+              <Brush type='line' onInit={g => {}} />
             </>
           )}
         </Asemic>
@@ -318,7 +318,7 @@ function App() {
           {({ h }) => (
             <>
               <Background map={textures[10]} />
-              <LineBrush onInit={g => {}} />
+              <Brush type='line' onInit={g => {}} />
             </>
           )}
         </Asemic>
@@ -326,7 +326,7 @@ function App() {
           {({ h }) => (
             <>
               <Background map={textures[11]} />
-              <LineBrush onInit={g => {}} />
+              <Brush type='line' onInit={g => {}} />
             </>
           )}
         </Asemic>
@@ -334,7 +334,7 @@ function App() {
           {({ h }) => (
             <>
               <Background map={textures[12]} />
-              <LineBrush onInit={g => {}} />
+              <Brush type='line' onInit={g => {}} />
             </>
           )}
         </Asemic> */}

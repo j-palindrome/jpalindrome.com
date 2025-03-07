@@ -9,7 +9,8 @@ export default function Genuary26() {
   return (
     <Asemic>
       {(s) => (
-        <ParticlesBrush
+        <Brush
+          type='particles'
           // renderInit
           onInit={(b) => {
             b.clear()

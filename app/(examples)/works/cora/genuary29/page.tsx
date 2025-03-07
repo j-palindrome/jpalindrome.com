@@ -42,6 +42,6 @@ export default function Genuary29() {
           })
         })
       }}
-    </MeshBrush>
+    </Brush>
   )
 }

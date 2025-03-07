@@ -24,7 +24,8 @@ export default function Genuary26() {
   return (
     <Asemic postProcessing={(i) => afterImage(i, 0.9)}>
       {(s) => (
-        <DashBrush
+        <Brush
+          type='dash'
           curvePosition={(input, { progress, lastFrame }) => {
             return vec4(
               lastFrame.x,
@@ -48,7 +49,7 @@ export default function Genuary26() {
             b.newCurve([0, 0, { translate: [0, 0.5 * s.h] }])
             b.repeat(10, ({ p }) => b.newPoints([p, 0]))
           }}
-        </DashBrush>
+        </Brush>
       )}
     </Asemic>
   )

@@ -12,7 +12,8 @@ export default function Genuary18() {
       }}
     >
       {(b) => (
-        <ParticlesBrush
+        <Brush
+          type='particles'
           {...{
             spacing: 20,
             recalculate: () => Math.random() * 500,
@@ -55,7 +56,7 @@ export default function Genuary18() {
               )
             })
           }}
-        </ParticlesBrush>
+        </Brush>
       )}
     </Asemic>
   )

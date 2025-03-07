@@ -1,5 +1,5 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { AdditiveBlending, InstancedMesh, PlaneGeometry } from 'three'
 import {
   cos,
@@ -34,7 +34,7 @@ import GroupBuilder from '../builders/GroupBuilder'
 import BrushBuilder from '../builders/BrushBuilder'
 // import sampleTex from './tex.png'
 
-export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
+export class ParticlesBrush extends BrushBuilder<'particles'> {
   protected getDefaultBrushSettings(): BrushData<'particles'> {
     return {
       type: 'particles',
@@ -53,7 +53,9 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
   protected onFrame() {
     this.renderer.compute(this.info.update)
   }
+
   protected onDraw() {}
+
   protected onInit() {
     const count = this.settings.particleCount
 
@@ -74,6 +76,16 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
         this.getBezier(
           instanceIndex.toFloat().div(this.info.instancesPerCurve),
           position,
+        )
+        velocity.assign(
+          vec2(
+            hash(instanceIndex.add(Math.random() * 100))
+              .mul(2)
+              .sub(1),
+            hash(instanceIndex.add(Math.random() * 100))
+              .mul(2)
+              .sub(1),
+          ),
         )
       } else {
         position.assign(
@@ -134,7 +146,7 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
           .mul(this.settings.attractorPull)
         If(distance.greaterThan(float(1).div(screenSize.x)), () => {
           force.addAssign(gravityForce)
-        }).Else(() => {})
+        })
 
         // spinning
         const spinningForce = vec2(cos(rotation), sin(rotation))
@@ -143,13 +155,16 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
           .mul(this.settings.attractorPush)
         // const spinningVelocity = spinningForce.cross(toAttractor)
         force.addAssign(spinningForce)
+        // TODO: bring back distance
         color.addAssign(
           thisColor.mul(max(0, thickness.sub(distance).div(thickness))),
         )
         // color.addAssign(thisColor)
+        // color.addAssign(vec4(1, 1, 1, 1).div(100))
       })
 
       colorBuffer.element(instanceIndex).assign(color)
+      // colorBuffer.element(instanceIndex).assign(vec4(1, 1, 1, 1))
 
       // velocity
 
@@ -181,25 +196,24 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
       position.modAssign(vec2(1, screenSize.y.div(screenSize.x)))
     })().compute(count)
 
+    this.renderer.compute(init)
+
     // nodes
     material.positionNode = Fn(() =>
-      // @ts-ignore
-      this.settings.particlePosition(positionBuffer.toAttribute(), {
+      this.settings.particlePosition(positionBuffer.element(instanceIndex), {
         progress: instanceIndex.toFloat().div(count),
         builder: this.group,
       }),
     )()
 
     const vUv = vec2().toVar()
+
     material.colorNode = Fn(() => {
       vUv.assign(screenUV.toVar())
-      If(uv().sub(0.5).length().greaterThan(0.5), () => {
-        Discard()
-      })
+      // return vec4(1, 1, 1, 1)
       return this.settings.pointColor(
         // vec4(1, 1, 1, 1),
-        // @ts-ignore
-        colorBuffer.toAttribute(),
+        colorBuffer.element(instanceIndex),
         {
           progress: float(0),
           builder: this.group,
@@ -215,7 +229,6 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
     const geometry = new PlaneGeometry(1, 1)
     const mesh = new InstancedMesh(geometry, material, count)
     this.scene.add(mesh)
-    this.renderer.compute(init)
 
     Object.assign(this.info, {
       mesh,
@@ -230,29 +243,4 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
     // this.info.geometry.dispose()
     this.scene.remove(this.info.mesh)
   }
-}
-
-export default function ParticlesBrush({
-  children,
-  ...settings
-}: BrushProps<'particles'>) {
-  // @ts-ignore
-  const renderer = useThree((state) => state.gl as WebGPURenderer)
-  const scene = useThree((state) => state.scene)
-  const group = new GroupBuilder(children)
-  const builder = new ParticlesBrushBuilder(settings, {
-    renderer,
-    group,
-    scene,
-  })
-  useFrame((state) => {
-    builder.frame(state.clock.elapsedTime)
-  })
-  useEffect(() => {
-    return () => {
-      builder.dispose()
-    }
-  }, [])
-
-  return <></>
 }

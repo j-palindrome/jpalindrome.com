@@ -41,7 +41,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export class BlobBrushBuilder extends BrushBuilder<'blob'> {
+export class BlobBrush extends BrushBuilder<'blob'> {
   protected getDefaultBrushSettings(): {
     type: 'blob'
     centerMode: 'center' | 'first' | 'betweenEnds'
@@ -189,24 +189,4 @@ export class BlobBrushBuilder extends BrushBuilder<'blob'> {
     this.info.material.dispose()
     this.info.geometry.dispose()
   }
-}
-
-export default function BlobBrush({
-  children,
-  ...settings
-}: BrushProps<'blob'>) {
-  const group = new GroupBuilder(children)
-  // @ts-ignore
-  const renderer = useThree(({ gl }) => gl as WebGPURenderer)
-  const scene = useThree(({ scene }) => scene)
-  const builder = new BlobBrushBuilder(settings, { group, renderer, scene })
-  useFrame((state) => {
-    builder.frame(state.clock.elapsedTime)
-  })
-  useEffect(() => {
-    return () => {
-      builder.dispose()
-    }
-  }, [])
-  return <></>
 }

@@ -17,7 +17,8 @@ export default function Genuary23() {
       }}
     >
       {(s) => (
-        <LineBrush
+        <Brush
+          type='line'
           renderInit={true}
           maxLength={1}
           maxPoints={50}
@@ -40,7 +41,7 @@ export default function Genuary23() {
               b.curves[0].splice(0, 1)
             }
           }}
-        </LineBrush>
+        </Brush>
       )}
     </Asemic>
   )

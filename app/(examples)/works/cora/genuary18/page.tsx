@@ -10,7 +10,8 @@ export default function Genuary18() {
       }}
     >
       {(b) => (
-        <ParticlesBrush
+        <Brush
+          type='particles'
           renderInit={() => Math.random() * 1000}
           spacing={0.1}
           speedDamping={0.01}
@@ -24,7 +25,7 @@ export default function Genuary18() {
               )
             })
           }}
-        </ParticlesBrush>
+        </Brush>
       )}
     </Asemic>
   )

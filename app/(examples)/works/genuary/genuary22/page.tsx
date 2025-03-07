@@ -20,7 +20,8 @@ export default function Genuary18() {
   const size = useThree((state) => state.size)
 
   return (
-    <LineBrush
+    <Brush
+      type='line'
       onInit={(g) => {
         g.newCurve([0, 0.5 * h, { thickness: size.height }], [1, 0.5 * h])
       }}

@@ -57,9 +57,9 @@ import { bezierPosition, bezierRotation } from '../util/bezier'
 export default abstract class BrushBuilder<T extends BrushTypes> {
   protected settings: ProcessData & BrushData<T>
   protected info: {
-    curvePositionArray: any
-    controlPointCounts: any
-    curveColorArray: any
+    controlPointCounts: ReturnType<typeof uniformArray>
+    curvePositionArray: ReturnType<typeof instancedArray>
+    curveColorArray: ReturnType<typeof instancedArray>
     instancesPerCurve: number
   } & Record<string, any>
   protected renderer: WebGPURenderer
@@ -75,11 +75,13 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
   protected nextTime: number
 
   frame(elapsedTime: number) {
-    if (elapsedTime >= this.nextTime && this.settings.renderInit) {
+    if (elapsedTime >= this.nextTime) {
       const r = this.settings.renderInit
       this.nextTime =
         typeof r === 'boolean'
-          ? elapsedTime + 1 / 60
+          ? r
+            ? elapsedTime + 1 / 60
+            : Infinity
           : typeof r === 'number'
             ? elapsedTime + r / 1000
             : elapsedTime + r(this.nextTime * 1000) / 1000
@@ -179,7 +181,8 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
         position.assign(progressPoint.xy)
         if (extra) {
           const index = t.y.mul(this.settings.maxPoints).add(t.x)
-          extra.color?.assign(this.info.curveColorArray.element(index))
+          // extra.color?.assign(this.info.curveColorArray.element(index))
+          extra.color?.assign(this.info.curveColorArray.element(0))
           extra.thickness?.assign(progressPoint.w)
           const rotationCalc = p1.xy.sub(p0.xy).toVar()
           extra.rotation?.assign(atan(rotationCalc.y, rotationCalc.x))

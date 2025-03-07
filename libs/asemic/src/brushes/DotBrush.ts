@@ -42,7 +42,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export class DotBrushBuilder extends BrushBuilder<'dot'> {
+export class DotBrush extends BrushBuilder<'dot'> {
   protected getDefaultBrushSettings(): { type: 'dot' } {
     return { type: 'dot' }
   }
@@ -108,30 +108,4 @@ export class DotBrushBuilder extends BrushBuilder<'dot'> {
   }
 
   protected onFrame() {}
-}
-
-export default function DotBrush({
-  children,
-  ...settings
-}: { children: ConstructorParameters<typeof GroupBuilder>[0] } & Partial<
-  BrushBuilder<'dot'>['settings']
->) {
-  // @ts-ignore
-  const renderer = useThree((state) => state.gl as WebGPURenderer)
-  const scene = useThree((state) => state.scene)
-  const group = new GroupBuilder(children)
-  const builder = useMemo(
-    () => new DotBrushBuilder(settings, { renderer, group, scene }),
-    [],
-  )
-  useFrame((state) => {
-    builder.frame(state.clock.elapsedTime)
-  })
-  useEffect(() => {
-    return () => {
-      builder.dispose()
-    }
-  }, [])
-
-  return <></>
 }

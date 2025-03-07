@@ -14,7 +14,8 @@ export default function Lines() {
   return (
     <>
       {range(count).map((i) => (
-        <StripeBrush
+        <Brush
+          type='stripe'
           key={i}
           pointColor={(input, { uv }) => {
             return vec4(input.rgb, input.a.mul(gaussian(uv.y.sub(0.5))))

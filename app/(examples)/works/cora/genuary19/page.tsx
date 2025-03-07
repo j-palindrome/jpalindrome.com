@@ -10,7 +10,8 @@ export default function Genuary18() {
         return input.add(bloom(input, 0.01))
       }}
     >
-      <LineBrush
+      <Brush
+        type='line'
         maxLength={2}
         spacing={1}
         curvePosition={(input, { progress, builder: { h: height } }) =>
@@ -39,7 +40,7 @@ export default function Genuary18() {
             })
           })
         }}
-      </LineBrush>
+      </Brush>
     </Asemic>
   )
 }

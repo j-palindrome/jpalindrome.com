@@ -6,7 +6,7 @@ import ParticlesBrush from '@/libs/asemic/src/components/ParticlesBrush'
 export default function Genuary8() {
   return (
     <AsemicCanvas dimensions={[1080, 1920]}>
-      <ParticlesBrush />
+      <Brush type='particles' />
     </AsemicCanvas>
   )
 }

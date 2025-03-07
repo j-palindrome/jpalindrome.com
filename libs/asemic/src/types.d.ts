@@ -133,7 +133,8 @@ declare global {
 
   type BrushProps<T extends BrushTypes> = {
     children: ConstructorParameters<typeof GroupBuilder>[0]
-  } & Partial<BrushBuilder<T>['settings']>
+    type: T
+  } & Omit<Partial<BrushBuilder<T>['settings']>, 'type'>
 }
 
 declare module 'three/webgpu' {

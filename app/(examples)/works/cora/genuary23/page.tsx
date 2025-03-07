@@ -17,7 +17,8 @@ export default function Genuary23() {
       }}
     >
       {(scene) => (
-        <DashBrush
+        <Brush
+          type='dash'
           maxLength={3}
           dashSize={150}
           pointColor={(color) =>
@@ -50,7 +51,7 @@ export default function Genuary23() {
               ),
             )
           }
-        </DashBrush>
+        </Brush>
       )}
     </Asemic>
   )

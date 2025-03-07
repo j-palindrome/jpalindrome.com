@@ -39,7 +39,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export class DashBrushBuilder extends BrushBuilder<'dash'> {
+export class DashBrush extends BrushBuilder<'dash'> {
   protected getDefaultBrushSettings() {
     return { type: 'dash', dashSize: 10 } as BrushData<'dash'>
   }
@@ -174,26 +174,4 @@ export class DashBrushBuilder extends BrushBuilder<'dash'> {
     this.info.geometry.dispose()
     this.scene.remove(this.info.mesh)
   }
-}
-
-export default function DashBrush({
-  children,
-  ...settings
-}: BrushProps<'dash'>) {
-  // @ts-ignore
-  const renderer = useThree((state) => state.gl as WebGPURenderer)
-  const scene = useThree((state) => state.scene)
-  const group = new GroupBuilder(children)
-  const builder = useMemo(
-    () => new DashBrushBuilder(settings, { renderer, group, scene }),
-    [],
-  )
-  useFrame((state) => {
-    builder.frame(state.clock.elapsedTime)
-  })
-  useEffect(() => {
-    builder.dispose()
-  }, [])
-
-  return <></>
 }

@@ -20,7 +20,8 @@ export default function Genuary26() {
   return (
     <Asemic>
       {(s) => (
-        <DashBrush
+        <Brush
+          type='dash'
           renderInit
           curvePosition={(pos, info) => {
             return select(
@@ -87,7 +88,7 @@ export default function Genuary26() {
               ),
             )
           }}
-        </DashBrush>
+        </Brush>
       )}
     </Asemic>
   )
