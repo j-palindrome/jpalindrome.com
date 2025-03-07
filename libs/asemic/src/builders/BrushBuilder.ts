@@ -65,7 +65,7 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
   protected renderer: WebGPURenderer
   protected group: GroupBuilder
   protected scene: Scene
-  protected abstract defaultBrushSettings: BrushData<T>
+  protected abstract getDefaultBrushSettings(): BrushData<T>
   protected abstract onFrame()
   protected abstract onDraw()
   protected abstract onInit()
@@ -258,7 +258,17 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
     }
   }
 
-  protected setup(settings: Partial<ProcessData> & Partial<BrushData<T>>) {
+  constructor(
+    settings: Partial<ProcessData> & Partial<BrushData<T>>,
+    {
+      renderer,
+      group,
+      scene,
+    }: { renderer: WebGPURenderer; group: GroupBuilder; scene: Scene },
+  ) {
+    this.renderer = renderer
+    this.group = group
+    this.scene = scene
     const defaultSettings: ProcessData = {
       maxLength: 0,
       maxCurves: 0,
@@ -288,23 +298,9 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
 
     this.settings = {
       ...defaultSettings,
-      ...this.defaultBrushSettings,
       ...settings,
+      ...this.getDefaultBrushSettings(),
     }
-  }
-
-  constructor(
-    settings: Partial<ProcessData> & Partial<BrushData<T>>,
-    {
-      renderer,
-      group,
-      scene,
-    }: { renderer: WebGPURenderer; group: GroupBuilder; scene: Scene },
-  ) {
-    this.renderer = renderer
-    this.group = group
-    this.scene = scene
-    this.setup(settings)
     if (this.settings.maxPoints === 0) {
       this.settings.maxPoints = max(this.group.curves.flatMap((x) => x.length))!
     }
@@ -402,8 +398,6 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
         : this.settings.renderStart) / 1000
 
     this.onInit()
-
-    // start drawing
     this.frame(0)
   }
 }

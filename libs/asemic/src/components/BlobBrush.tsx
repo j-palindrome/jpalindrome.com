@@ -42,10 +42,12 @@ declare module '@react-three/fiber' {
 }
 
 export class BlobBrushBuilder extends BrushBuilder<'blob'> {
-  protected defaultBrushSettings: {
+  protected getDefaultBrushSettings(): {
     type: 'blob'
     centerMode: 'center' | 'first' | 'betweenEnds'
-  } = { type: 'blob', centerMode: 'center' }
+  } {
+    return { type: 'blob', centerMode: 'center' }
+  }
   protected onFrame() {}
   protected onDraw() {
     const array = this.info.centerPoints.array as THREE.Vector2[]
@@ -103,7 +105,6 @@ export class BlobBrushBuilder extends BrushBuilder<'blob'> {
         curveI + this.info.instancesPerCurve - 1 + this.settings.maxCurves,
       )
     }
-    console.log(indexes)
 
     geometry.setIndex(indexes)
     const material = new MeshBasicNodeMaterial({

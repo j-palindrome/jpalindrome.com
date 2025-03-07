@@ -43,7 +43,9 @@ declare module '@react-three/fiber' {
 }
 
 export class DotBrushBuilder extends BrushBuilder<'dot'> {
-  protected defaultBrushSettings: { type: 'dot' }
+  protected getDefaultBrushSettings(): { type: 'dot' } {
+    return { type: 'dot' }
+  }
 
   protected onDispose() {
     this.scene.remove(this.info.mesh)
@@ -126,7 +128,9 @@ export default function DotBrush({
     builder.frame(state.clock.elapsedTime)
   })
   useEffect(() => {
-    builder.dispose()
+    return () => {
+      builder.dispose()
+    }
   }, [])
 
   return <></>

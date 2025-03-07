@@ -40,9 +40,8 @@ declare module '@react-three/fiber' {
 }
 
 export class DashBrushBuilder extends BrushBuilder<'dash'> {
-  protected defaultBrushSettings: { type: 'dash'; dashSize: number } = {
-    type: 'dash',
-    dashSize: 3,
+  protected getDefaultBrushSettings() {
+    return { type: 'dash', dashSize: 10 } as BrushData<'dash'>
   }
   protected onFrame() {
     this.renderer.compute(this.info.updateCurveLengths)
@@ -190,10 +189,10 @@ export default function DashBrush({
     [],
   )
   useFrame((state) => {
-    this.frame(state.clock.elapsedTime)
+    builder.frame(state.clock.elapsedTime)
   })
   useEffect(() => {
-    this.dispose()
+    builder.dispose()
   }, [])
 
   return <></>

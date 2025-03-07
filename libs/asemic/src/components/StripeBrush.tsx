@@ -20,7 +20,9 @@ declare module '@react-three/fiber' {
 }
 
 export class StripeBrushBuilder extends BrushBuilder<'stripe'> {
-  protected defaultBrushSettings: { type: 'stripe' } = { type: 'stripe' }
+  protected getDefaultBrushSettings(): { type: 'stripe' } {
+    return { type: 'stripe' }
+  }
   protected onFrame() {}
   protected onDraw() {}
   protected onInit() {
@@ -38,6 +40,8 @@ export class StripeBrushBuilder extends BrushBuilder<'stripe'> {
       currentIndex += 2
     }
     geometry.setIndex(indexes)
+    console.log()
+
     const material = new MeshBasicNodeMaterial({
       transparent: true,
       depthWrite: false,
@@ -117,16 +121,15 @@ export default function StripeBrush({
   const renderer = useThree((state) => state.gl as WebGPURenderer)
   const scene = useThree((state) => state.scene)
   const group = new GroupBuilder(children)
-  const builder = useMemo(
-    () => new StripeBrushBuilder(settings, { renderer, group, scene }),
-    [],
-  )
+  const builder = new StripeBrushBuilder(settings, { renderer, group, scene })
   useFrame((state) => {
     builder.frame(state.clock.elapsedTime)
   })
   useEffect(() => {
-    builder.dispose()
-  }, [])
+    return () => {
+      builder.dispose()
+    }
+  }, [builder])
 
   return <></>
 }

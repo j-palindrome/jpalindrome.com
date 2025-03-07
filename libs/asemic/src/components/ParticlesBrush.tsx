@@ -35,18 +35,20 @@ import BrushBuilder from '../builders/BrushBuilder'
 // import sampleTex from './tex.png'
 
 export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
-  protected defaultBrushSettings: BrushData<'particles'> = {
-    type: 'particles',
-    speedDamping: 1e-3,
-    initialSpread: true,
-    speedMax: 1,
-    speedMin: 0,
-    particleSize: 1,
-    particleVelocity: (input) => input,
-    particlePosition: (input) => input,
-    attractorPull: 0,
-    attractorPush: 1,
-    particleCount: 1e4,
+  protected getDefaultBrushSettings(): BrushData<'particles'> {
+    return {
+      type: 'particles',
+      speedDamping: 1e-5,
+      initialSpread: true,
+      speedMax: 1,
+      speedMin: 0.4,
+      particleSize: 1,
+      particleVelocity: (input) => input,
+      particlePosition: (input) => input,
+      attractorPull: 1,
+      attractorPush: 0,
+      particleCount: 1e4,
+    }
   }
   protected onFrame() {
     this.renderer.compute(this.info.update)
@@ -70,7 +72,7 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
       const velocity = velocityBuffer.element(instanceIndex)
       if (!this.settings.initialSpread) {
         this.getBezier(
-          instanceIndex.toFloat().div(this.info.instancePerCurve),
+          instanceIndex.toFloat().div(this.info.instancesPerCurve),
           position,
         )
       } else {
@@ -104,13 +106,13 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
       const color = vec4().toVar()
       const force = vec2(0).toVar()
 
-      Loop(this.settings.maxCurves * this.info.instancePerCurve, ({ i }) => {
+      Loop(this.settings.maxCurves * this.info.instancesPerCurve, ({ i }) => {
         const attractorPosition = vec2().toVar()
         const rotation = float().toVar()
         const thickness = float().toVar()
         const thisColor = vec4().toVar()
         this.getBezier(
-          float(i).div(this.info.instancePerCurve),
+          float(i).div(this.info.instancesPerCurve),
           attractorPosition,
           {
             rotation,
@@ -225,7 +227,7 @@ export class ParticlesBrushBuilder extends BrushBuilder<'particles'> {
 
   protected onDispose() {
     this.info.material.dispose()
-    this.info.geometry.dispose()
+    // this.info.geometry.dispose()
     this.scene.remove(this.info.mesh)
   }
 }
@@ -238,10 +240,11 @@ export default function ParticlesBrush({
   const renderer = useThree((state) => state.gl as WebGPURenderer)
   const scene = useThree((state) => state.scene)
   const group = new GroupBuilder(children)
-  const builder = useMemo(
-    () => new ParticlesBrushBuilder(settings, { renderer, group, scene }),
-    [],
-  )
+  const builder = new ParticlesBrushBuilder(settings, {
+    renderer,
+    group,
+    scene,
+  })
   useFrame((state) => {
     builder.frame(state.clock.elapsedTime)
   })

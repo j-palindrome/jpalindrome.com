@@ -33,7 +33,9 @@ declare module '@react-three/fiber' {
 }
 
 export class LineBrushBuilder extends BrushBuilder<'line'> {
-  protected defaultBrushSettings: { type: 'line' }
+  protected getDefaultBrushSettings(): { type: 'line' } {
+    return { type: 'line' }
+  }
   protected onFrame() {}
   protected onDraw() {}
   protected onInit() {
@@ -153,16 +155,15 @@ export default function LineBrush({
   const renderer = useThree((state) => state.gl as WebGPURenderer)
   const scene = useThree((state) => state.scene)
   const group = new GroupBuilder(children)
-  const builder = useMemo(
-    () => new LineBrushBuilder(settings, { renderer, group, scene }),
-    [],
-  )
+  const builder = new LineBrushBuilder(settings, { renderer, group, scene })
   useFrame((state) => {
     builder.frame(state.clock.elapsedTime)
   })
   useEffect(() => {
-    builder.dispose()
-  }, [])
+    return () => {
+      builder.dispose()
+    }
+  }, [builder])
 
   return <></>
 }
