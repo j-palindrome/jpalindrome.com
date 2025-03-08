@@ -30,30 +30,6 @@ import {
 } from 'three/tsl'
 import { bezierPosition, bezierRotation } from '../util/bezier'
 
-// const defaultBrushSettings: { [T in BrushTypes]: BrushData<T> } = {
-//   line: { type: 'line' },
-//   dash: {
-//     type: 'dash',
-//     dashSize: 10,
-//   },
-//   particles: {
-//     type: 'particles',
-//     speedDamping: 1e-3,
-//     initialSpread: true,
-//     speedMax: 1,
-//     speedMin: 0,
-//     particleSize: 1,
-//     particleVelocity: (input) => input,
-//     particlePosition: (input) => input,
-//     attractorPull: 0,
-//     attractorPush: 1,
-//     particleCount: 1e4,
-//   },
-//   stripe: { type: 'stripe' },
-//   dot: { type: 'dot' },
-//   blob: { type: 'blob', centerMode: 'center' },
-// }
-
 export default abstract class BrushBuilder<T extends BrushTypes> {
   protected settings: ProcessData & BrushData<T>
   protected info: {
@@ -73,6 +49,7 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
   protected advanceControlPoints: ComputeNode
   protected loadControlPoints: ComputeNode
   protected nextTime: number
+  protected size = new Vector2()
 
   frame(elapsedTime: number) {
     if (elapsedTime >= this.nextTime) {
@@ -86,7 +63,10 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
             ? elapsedTime + r / 1000
             : elapsedTime + r(this.nextTime * 1000) / 1000
       if (this.settings.renderClear) this.group.clear()
-      this.group.reInitialize(elapsedTime)
+      this.group.reInitialize(
+        elapsedTime,
+        this.renderer.getDrawingBufferSize(this.size),
+      )
       for (let i = 0; i < this.settings.maxCurves; i++) {
         this.info.controlPointCounts.array[i] = this.group.curves[i].length
       }
@@ -272,6 +252,9 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
     this.renderer = renderer
     this.group = group
     this.scene = scene
+
+    this.group.reInitialize(0, this.renderer.getDrawingBufferSize(this.size))
+
     const defaultSettings: ProcessData = {
       maxLength: 0,
       maxCurves: 0,

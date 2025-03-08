@@ -5,12 +5,22 @@ import { mrt, output } from 'three/tsl'
 import invariant from 'tiny-invariant'
 import Builder from './Builder'
 import PointBuilder from './PointBuilder'
+import { FontBuilder } from './FontBuilder'
+import { DefaultFont } from '../fonts/DefaultFont'
 
 export default class GroupBuilder extends Builder {
   time: number = performance.now() / 1000
+  h: number
+  size = new Vector2()
   curves: PointBuilder[][] = []
   lastIndex: number = 0
   onInit: (g: GroupBuilder) => any
+  font: FontBuilder = new DefaultFont()
+
+  setFont(font: FontBuilder) {
+    this.font = font
+    return this
+  }
 
   getWave(
     frequency: number = 1,
@@ -588,9 +598,9 @@ ${this.curves
     let i = 0
     for (let letter of str) {
       if (eachLetter) eachLetter(i)
-      if (this.letters[letter]) {
+      if (this.font.letters[letter]) {
         this.transform({ strength: 0, translate: [0.2, 0], push: true })
-        this.letters[letter]()
+        this.font.letters[letter](this)
       } else if (letter === '\n') {
         lines.push(this.curves.length)
         this.transform({
@@ -609,247 +619,10 @@ ${this.curves
     return this
   }
 
-  protected letters: Record<string, () => GroupBuilder> = {
-    ' ': () => this.transform({ translate: [0.5, 0], reset: 'pop' }),
-    '\t': () => this.transform({ translate: [2, 0], reset: 'pop' }),
-    a: () =>
-      this.newCurve([1, 1], [0.5, 1.3], [0, 0.5], [0.5, -0.3], [1, 0])
-        .newCurve([0, 1, { translate: [1, 0] }], [-0.1, 0.5], [0, -0.3])
-        .slide(0.1)
-        .within([0, 0, { reset: 'pop' }], [0.5, 0.6], 2)
-        .transform({ translate: [0.5, 0] }),
-    b: () =>
-      this.newCurve([0, 1], [0, 0])
-        .newCurve(
-          [0, 1, { scale: [0.5, 0.5] }],
-          [0.5, 1.1],
-          [1, 0.5],
-          [0.5, -0.1],
-          [0, 0],
-        )
-        .within([0, 0, { reset: 'pop' }], [0.5, 1], 2)
-        .transform({ translate: [0.5, 0] }),
-    c: () =>
-      this.newCurve(
-        [1, 0.75, { scale: [0.5, 0.5] }],
-        [0.9, 1],
-        [0, 1],
-        [0, 0],
-        [0.9, 0],
-        [1, 1 - 0.75],
-      )
-        .within([0, 0, { reset: 'pop' }], [0.5, 0.5], 1)
-        .transform({ translate: [0.5, 0] }),
-    d: () =>
-      this.newCurve([1, 1], [1, 0])
-        .newCurve(
-          [0, 1, { scale: [-0.5, 0.5], translate: [1, 0] }],
-          [0.5, 1.1],
-          [1, 0.5],
-          [0.5, -0.1],
-          [0, 0],
-        )
-        .within([0, 0, { reset: 'pop' }], [0.5, 1], 2)
-        .transform({ translate: [0.5, 0] }),
-    e: () =>
-      this.newCurve([0, 0.5], [1, 0.5])
-        .newCurve([1, 0.5], [1, 1], [0, 1], [0, 0], [0.9, 0], [1, 0.2])
-        .within([0, 0, { reset: 'pop' }], [0.5, 0.5], 2)
-        .transform({ translate: [0.5, 0] }),
-    f: () =>
-      this.newCurve([0, 0], [0, 1 / 2], [0, 1], [1 / 2, 1], [1 / 2, 0.75])
-        .newCurve([0, 1 / 2], [1 / 2, 1 / 2])
-        .slide(1 / 4)
-        .within([0, 0, { reset: 'pop' }], [1 / 2, 1], 2)
-        .transform({ translate: [0.35, 0] }),
-    g: () =>
-      this.newCurve(
-        [0.5, 0.5],
-        [0.5, 0],
-        [0, 0],
-        [0, 0.5],
-        [0.3, 0.6],
-        [0.5, 0.5],
-      )
-        .newCurve([0.5, 0.5], [0.5, 0], [0.5, -0.5], [0, -0.5], [0.05, -0.25])
-        .within([0, -0.5, { reset: 'pop' }], [0.5, 0.5], 2)
-        .transform({ translate: [0.5, 0] }),
-    h: () =>
-      this.newCurve([0, 0], [0, 1])
-        .newCurve([0, 0.6, { scale: [0.5, 0.7] }], [1, 1], [1, 0])
-        .transform({ translate: [0.5, 0], reset: 'pop' }),
-    i: () =>
-      this.transform({ translate: [0.2, 0], push: true })
-        .newCurve([0, 0], [0, 1, { scale: [1, 0.5] }])
-        .newCurve(
-          [0, 0, { reset: 'last', translate: [0, 0.52], scale: 0.05 / 0.5 }],
-          [-1, 0],
-          [-1, 1],
-          [1, 1],
-          [1, 0],
-          [0, 0],
-        )
-        .transform({ reset: 'pop' })
-        .transform({ translate: [0.2, 0], reset: 'pop' }),
-    j: () =>
-      this.transform({ translate: [-0.25, 0], push: true })
-        .newCurve(
-          [0, 0, { translate: [1 - 0.4, 1], scale: [0.7, 1], rotate: 0.05 }],
-          [0, -1],
-          [-1, -1],
-          [-1, -0.5],
-        )
-        .transform({ rotate: -0.05 })
-        .newCurve(
-          [
-            0,
-            0,
-            {
-              translate: [0, 0.2],
-              scale: [0.1 / 2, 0.1],
-            },
-          ],
-          [-1, 0],
-          [-1, 1],
-          [1, 1],
-          [1, 0],
-          [0, 0],
-        )
-        .within([0, -0.5, { reset: 'pop' }], [0.5, 0.5], 2)
-        .transform({ translate: [0.25, 0], reset: 'pop' }),
-    k: () =>
-      this.newCurve([0, 1], [0, 0])
-        .newCurve(
-          [0, 0, { translate: this.getIntersect(0.6), push: true }],
-          [0.3, 0, { rotate: 0.15 }],
-        )
-        .newCurve([0, 0, { reset: 'pop' }], [0.3, 0, { reset: 'pop' }])
-        .within([0, 0], [0.5, 1], 3)
-        .transform({ translate: [0.5, 0] }),
-    l: () =>
-      this.newCurve([0, 1], [0, 0.2], [0, 0], [0.1, 0]).transform({
-        translate: [0.2, 0],
-        reset: 'pop',
-      }),
-    m: () =>
-      this.newCurve([0, 0, { scale: [0.5, 0.5] }], [0, 1], [1, 1], [1, 0])
-        .newCurve([0, 0, { translate: [1, 0] }], [0, 1], [1, 1], [1, 0])
-        .transform({ translate: [1, 0], reset: 'pop' }),
-    n: () =>
-      this.newCurve(
-        [0, 0, { scale: [0.5, 0.5] }],
-        [0, 1],
-        [1, 1],
-        [1, 0],
-      ).transform({
-        translate: [0.5, 0],
-        reset: 'pop',
-      }),
-    o: () =>
-      this.newCurve(
-        [0, 0, { translate: [0.25, 0], scale: 0.5 }],
-        [-0.5, 0],
-        [-0.5, 1],
-        [0.5, 1],
-        [0.5, 0],
-        [0, 0],
-      ).transform({ reset: 'pop', translate: [0.5, 0] }),
-    p: () =>
-      this.newCurve([0, 0, { translate: [0, -0.5] }], [0, 1])
-        .newCurve(
-          [0, 1, { reset: 'last', scale: 0.5 }],
-          [1, 1.3],
-          [1, -0.3],
-          [0, 0],
-        )
-        .within([0, -0.5, { reset: 'pop' }], [0.5, 0.5], 2)
-        .transform({ translate: [0.5, 0] }),
-    q: () =>
-      this.newCurve(
-        [0, 1, { translate: [0, -0.5], push: true }],
-        [0, 0, { strength: 1 }],
-        [0.2, 0, { rotate: 0.15 }],
-      )
-        .newCurve(
-          [0, 1, { reset: 'pop', scale: [0.5, 0.5], translate: [0, 0.5] }],
-          [-1, 1.3],
-          [-1, -0.3],
-          [0, 0],
-        )
-        .within([0, -0.5, { reset: 'pop' }], [0.5, 0.5], 2)
-        .transform({ translate: [0.5, 0] }),
-    r: () =>
-      this.newCurve([0, 0], [0, 0.5])
-        .newCurve(
-          [0, 0, { translate: this.getIntersect(0.9) }],
-          [0.25, 0.1],
-          [0.5, 0],
-        )
-        .transform({ translate: [0.5, 0], reset: 'pop' }),
-    s: () =>
-      this.newCurve(
-        [0.5, 1, { translate: [-0.1, 0], push: true }],
-        [0.2, 1],
-        [0.2, 0.6],
-        [0.5, 0.6],
-        [1, 0.6],
-        [1, 0],
-        [0, 0],
-      )
-        .within([0, 0, { reset: 'pop' }], [0.5, 0.5], 1)
-        .transform({ translate: [0.45, 0], reset: 'pop' }),
-    t: () =>
-      this.newCurve([0, 0], [0, 1])
-        .newCurve([0, 0, { translate: [0, 0.65], scale: [0.4, 1] }], [1, 0])
-        .slide(0.5)
-        .transform({ translate: [0.2, 0], reset: 'pop' }),
-    u: () =>
-      this.newCurve(
-        [0, 0, { translate: [0, 0.5], scale: [0.5, 0.5] }],
-        [0, -1],
-        [1, -1],
-        [1, 0],
-      ).transform({ translate: [0.5, 0], reset: 'pop' }),
-    v: () =>
-      this.newCurve(
-        [0, 0, { translate: [0, 0.5], scale: [0.5, 0.5] }],
-        [0.5, -1, { strength: 1 }],
-        [1, 0],
-      ).transform({ translate: [0.5, 0], reset: 'pop' }),
-    w: () =>
-      this.newCurve(
-        [0, 0.5, { scale: [0.7, 1], strength: 1 }],
-        [0.25, 0, { strength: 1 }],
-        [0.5, 0.5, { strength: 1 }],
-        [0.75, 0, { strength: 1 }],
-        [1, 0.5, { strength: 1 }],
-      ).transform({ translate: [0.7, 0], reset: 'pop' }),
-    x: () =>
-      this.newCurve([1, 1, { translate: [0.25, 0.25], scale: 0.25 }], [-1, -1])
-        .newCurve([-1, 1], [1, -1])
-        .transform({ translate: [0.5, 0], reset: 'pop' }),
-    y: () =>
-      this.newCurve(
-        [0, -1, { scale: [0.5, 0.5], translate: [-0.05, 0] }],
-        [1, 1],
-      )
-        .newCurve([0.5, 0], [0, 1])
-        .transform({ translate: [0.55, 0], reset: 'pop' }),
-    z: () =>
-      this.newCurve(
-        [0, 1, { scale: 0.5, strength: 1 }],
-        [1, 1, { strength: 1 }],
-        [0, 0, { strength: 1 }],
-        [1, 0],
-      ).transform({ translate: [0.5, 0], reset: 'pop' }),
-    // this.newCurve([0, 1], [0, 0.2], [0, 0], [0.1, 0]).transform({
-    //   translate: [0.2, 0],
-    //   reset: 'pop'
-    // })
-  }
-
-  reInitialize(seconds: number) {
+  reInitialize(seconds: number, size: Vector2) {
     this.time = seconds
+    this.h = size.y / size.x
+    this.size.copy(size)
     this.reset(true)
     this.hashIndex = 0
     this.noiseIndex = 0
@@ -865,6 +638,5 @@ ${this.curves
   constructor(onInit: (g: GroupBuilder) => any) {
     super()
     this.onInit = onInit
-    this.reInitialize(0)
   }
 }

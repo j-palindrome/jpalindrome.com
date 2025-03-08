@@ -59,7 +59,7 @@ export default function Brush<T extends BrushTypes>({
       builder.dispose()
       builderRef.current = null
     }
-  }, [])
+  }, [children, type, settings])
 
   return <></>
 }

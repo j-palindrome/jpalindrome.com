@@ -1,7 +1,17 @@
 import { extend, ThreeElement, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
-import { float, Fn, select, varying, vec2, vec4, vertexIndex } from 'three/tsl'
+import {
+  float,
+  Fn,
+  If,
+  select,
+  uniformArray,
+  varying,
+  vec2,
+  vec4,
+  vertexIndex,
+} from 'three/tsl'
 import {
   MeshBasicNodeMaterial,
   StorageInstancedBufferAttribute,
@@ -9,6 +19,7 @@ import {
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
 import BrushBuilder from '../builders/BrushBuilder'
+import { range } from 'lodash'
 
 extend({ StorageInstancedBufferAttribute })
 declare module '@react-three/fiber' {
@@ -20,7 +31,9 @@ declare module '@react-three/fiber' {
 }
 
 export class StripeBrush extends BrushBuilder<'stripe'> {
-  protected getDefaultBrushSettings(): { type: 'stripe' } {
+  protected getDefaultBrushSettings(): {
+    type: 'stripe'
+  } {
     return { type: 'stripe' }
   }
   protected onFrame() {}
@@ -28,62 +41,54 @@ export class StripeBrush extends BrushBuilder<'stripe'> {
   protected onInit() {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3))
-    const indexGuide = [0, 1, 2, 1, 2, 3]
-
-    let currentIndex = 0
     const indexes: number[] = []
-    for (let i = 0; i < this.settings.maxCurves; i++) {
-      for (let i = 0; i < this.info.instancesPerCurve - 1; i++) {
-        indexes.push(...indexGuide.map((x) => x + currentIndex))
-        currentIndex += 2
-      }
-      currentIndex += 2
-    }
-    geometry.setIndex(indexes)
-    console.log()
 
+    for (let curveI = 0; curveI < this.settings.maxCurves; curveI += 2) {
+      for (let i = 0; i < this.info.instancesPerCurve; i++) {
+        const indexTemplate = [
+          0,
+          this.info.instancesPerCurve,
+          1,
+          1,
+          this.info.instancesPerCurve,
+          this.info.instancesPerCurve + 1,
+        ]
+        indexes.push(
+          ...indexTemplate.map(
+            (x) => x + i + curveI * this.info.instancesPerCurve,
+          ),
+        )
+      }
+    }
+
+    geometry.setIndex(indexes)
     const material = new MeshBasicNodeMaterial({
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       side: THREE.DoubleSide,
       color: 'white',
     })
     material.mrtNode = this.settings.renderTargets
 
     const position = vec2().toVar('thisPosition')
-    const rotation = float(0).toVar('rotation')
-    const thickness = float(0).toVar('thickness')
     const color = varying(vec4(), 'color')
     const progress = varying(float(), 'progress')
     const vUv = varying(vec2(), 'vUv')
 
     const main = Fn(() => {
-      // every 2 vertices draws from one curve
-      // [0, 1, 2, 1, 2, 3] = [0, 2 -> bottom, 1, 3 -> top]
-      // 0 -> 1 = 0 -> 1, 1 - 2 = 2 -> 3, 2 - 3 = 4 - 5
-      const thisProgress = vertexIndex
-        .toFloat()
-        .div(this.info.instancesPerCurve - 0.999)
-        .fract()
-      const curveIndexStart = vertexIndex
-        .div(this.info.instancesPerCurve)
-        .mul(2)
-        .add(select(vertexIndex.modInt(2).equal(0), 0, 1))
-
-      this.info.getBezier(thisProgress.add(curveIndexStart), position, {
-        rotation,
-        thickness,
-        color,
-        progress,
-      })
-
-      vUv.assign(
-        vec2(
-          vertexIndex.toFloat().div(this.info.instancesPerCurve),
-          select(vertexIndex.modInt(2).equal(0), 0, 1),
-        ),
+      this.getBezier(
+        vertexIndex.toFloat().div(this.info.instancesPerCurve - 0.999),
+        position,
+        {
+          color,
+          progress,
+        },
       )
+      vUv.assign(
+        vec2(vertexIndex.toFloat().div(this.info.instancesPerCurve - 0.999), 1),
+      )
+
       return vec4(position, 0, 1)
     })
 
@@ -98,17 +103,19 @@ export class StripeBrush extends BrushBuilder<'stripe'> {
     )()
 
     material.needsUpdate = true
+
     const mesh = new THREE.Mesh(geometry, material)
+    this.scene.add(mesh)
+
     Object.assign(this.info, {
       material,
       geometry,
       mesh,
     })
   }
-
   protected onDispose() {
+    this.scene.remove(this.info.mesh)
     this.info.material.dispose()
     this.info.geometry.dispose()
-    this.scene.remove(this.info.mesh)
   }
 }
