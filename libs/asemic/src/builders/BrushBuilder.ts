@@ -29,9 +29,10 @@ import {
   vec4,
 } from 'three/tsl'
 import { bezierPosition, bezierRotation } from '../util/bezier'
+import invariant from 'tiny-invariant'
 
 export default abstract class BrushBuilder<T extends BrushTypes> {
-  protected settings: ProcessData & BrushData<T>
+  protected settings: ProcessData<T> & BrushData<T>
   protected info: {
     controlPointCounts: ReturnType<typeof uniformArray>
     curvePositionArray: ReturnType<typeof instancedArray>
@@ -105,6 +106,15 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
   dispose() {
     this.info.curvePositionArray.dispose()
     this.info.curveColorArray.dispose()
+    if (this.settings.onClick) {
+      this.renderer.domElement.removeEventListener('click', this.onClick)
+    }
+    if (this.settings.onDrag) {
+      this.renderer.domElement.removeEventListener('mouseover', this.onDrag)
+    }
+    if (this.settings.onOver) {
+      this.renderer.domElement.removeEventListener('mouseover', this.onOver)
+    }
     this.onDispose()
   }
 
@@ -241,8 +251,31 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
     }
   }
 
+  screenToWorld(ev: MouseEvent) {
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    const x = (ev.clientX - rect.left) / rect.width
+    const y = (rect.height - (ev.clientY - rect.top)) / rect.width
+    return new Vector2(x, y)
+  }
+
+  onOver(ev: MouseEvent) {
+    if (this.group.getIsWithin(this.screenToWorld(ev)) && !ev.buttons)
+      this.settings.onOver(this)
+  }
+
+  onDrag(ev: MouseEvent) {
+    if (ev.buttons && this.group.getIsWithin(this.screenToWorld(ev)))
+      this.settings.onDrag(this)
+  }
+
+  onClick(ev: MouseEvent) {
+    console.log(this.screenToWorld(ev))
+    if (this.group.getIsWithin(this.screenToWorld(ev)))
+      this.settings.onClick(this)
+  }
+
   constructor(
-    settings: Partial<ProcessData> & Partial<BrushData<T>>,
+    settings: Partial<ProcessData<T>> & Partial<BrushData<T>>,
     {
       renderer,
       group,
@@ -255,7 +288,7 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
 
     this.group.reInitialize(0, this.renderer.getDrawingBufferSize(this.size))
 
-    const defaultSettings: ProcessData = {
+    const defaultSettings: ProcessData<T> = {
       maxLength: 0,
       maxCurves: 0,
       maxPoints: 0,
@@ -278,8 +311,6 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
       curveColor: (input) => input,
       pointRotate: (input) => input,
       pointThickness: (input) => input,
-      onUpdate: () => {},
-      onInit: () => {},
     }
 
     this.settings = {
@@ -385,5 +416,24 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
 
     this.onInit()
     this.frame(0)
+
+    if (this.settings.onClick) {
+      this.renderer.domElement.addEventListener(
+        'click',
+        this.onClick.bind(this),
+      )
+    }
+    if (this.settings.onDrag) {
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onDrag.bind(this),
+      )
+    }
+    if (this.settings.onOver) {
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onOver.bind(this),
+      )
+    }
   }
 }

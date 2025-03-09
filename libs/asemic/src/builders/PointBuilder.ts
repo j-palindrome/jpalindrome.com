@@ -9,10 +9,12 @@ export default class PointBuilder extends Vector2 {
     defaultCoordinateSettings.thickness
 
   constructor(
-    point: [number, number] = [0, 0],
+    point: [number, number] | Vector2 = [0, 0],
     settings: Partial<CoordinateSettings> = defaultCoordinateSettings,
   ) {
-    super(point[0], point[1])
+    super(
+      ...(point instanceof Vector2 ? [point.x, point.y] : [point[0], point[1]]),
+    )
     Object.assign(this, settings)
   }
 

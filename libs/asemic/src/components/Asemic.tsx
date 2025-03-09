@@ -50,7 +50,7 @@ export function AsemicCanvas({
   outputChannel?: number | ((ctx: AudioContext) => number)
   highBitDepth?: boolean
 } & React.PropsWithChildren) {
-  const [audio, setAudio] = useState<SceneBuilder<any>['audio']>(null)
+  const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null!)
   const [started, setStarted] = useState(!useAudio ? true : false)
   // const [recording, setRecording] = useState(false)
@@ -204,22 +204,16 @@ function Adjust() {
 }
 
 export function useAsemic<T extends SettingsInput>({
-  controls,
   ...settings
 }: {
   controls?: T
-} & Partial<SceneBuilder<T>['sceneSettings']> = {}) {
+} & Partial<SceneBuilder['sceneSettings']> = {}) {
   const { renderer, scene, camera } = useThree(({ gl, scene, camera }) => ({
     // @ts-expect-error
     renderer: gl as WebGPURenderer,
     scene,
     camera,
   }))
-  controls = {
-    constants: { ...controls?.constants },
-    uniforms: { ...controls?.uniforms },
-    refs: { ...controls?.refs },
-  } as T
 
   const size = useThree((state) => state.gl.getDrawingBufferSize(new Vector2()))
 
@@ -235,19 +229,13 @@ export function useAsemic<T extends SettingsInput>({
   const postProcessing = new PostProcessing(renderer)
   const scenePass = pass(scene, camera)
 
-  const controlsBuilt = useEvents(controls)
-
   const h = size.height / size.width
-  const b = new SceneBuilder(
-    settings,
-    {
-      postProcessing: { postProcessing, scenePass, readback },
-      audio,
-      h,
-      size,
-    },
-    controlsBuilt,
-  )
+  const b = new SceneBuilder(settings, {
+    postProcessing: { postProcessing, scenePass, readback },
+    audio,
+    h,
+    size,
+  })
   useEffect(() => {
     b.h = h
     b.size = size
@@ -300,7 +288,7 @@ export function Asemic<T extends SettingsInput>({
   children,
   ...props
 }: Parameters<typeof useAsemic<T>>[0] & {
-  children: ((builder: SceneBuilder<T>) => ReactNode) | ReactNode
+  children: ((builder: SceneBuilder) => ReactNode) | ReactNode
 }) {
   const builder = useAsemic(props)
   return <>{typeof children === 'function' ? children(builder) : children}</>

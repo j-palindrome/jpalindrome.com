@@ -40,7 +40,7 @@ declare global {
     builder: GroupBuilder
   }
 
-  type ProcessData = {
+  type ProcessData<T extends BrushTypes> = {
     renderInit: boolean | number | ((lastFrame: number) => number)
     renderStart: number | (() => number)
     renderClear: boolean
@@ -89,8 +89,11 @@ declare global {
         lastFrame: ReturnType<typeof vec4>
       },
     ) => typeof input
-    onUpdate: (builder: GroupBuilder) => void
-    onInit: (builder: GroupBuilder) => void
+    onUpdate?: (b: BrushBuilder<T>) => void
+    onInit?: (b: BrushBuilder<T>) => void
+    onClick?: (b: BrushBuilder<T>) => void
+    onDrag?: (b: BrushBuilder<T>) => void
+    onOver?: (b: BrushBuilder<T>) => void
   }
 
   type BrushTypes = 'dash' | 'line' | 'particles' | 'stripe' | 'blob' | 'dot'
