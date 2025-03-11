@@ -1,12 +1,11 @@
 'use client'
 
-import { Asemic, AsemicCanvas } from '@/libs/asemic/src/Asemic'
-import ParticlesBrush from '@/libs/asemic/src/components/ParticlesBrush'
+import { AsemicCanvas, Brush } from '@asemic'
 
 export default function Genuary8() {
   return (
     <AsemicCanvas dimensions={[1080, 1920]}>
-      <Brush type='particles' />
+      <Brush type='particles'>{(g) => {}}</Brush>
     </AsemicCanvas>
   )
 }

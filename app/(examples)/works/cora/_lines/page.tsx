@@ -1,11 +1,11 @@
 'use client'
 
 import LineBrush from '@/libs/asemic/src/LineBrush'
-import StripeBrush from '@/libs/asemic/src/components/StripeBrush'
+import { Brush } from '@asemic'
 import { gaussian } from '@/libs/util/three/gaussian'
 import { range } from 'lodash'
 import { vec4 } from 'three/tsl'
-import { useAsemic } from '@/libs/asemic/src/Asemic'
+import { useAsemic } from '@asemic'
 import { Color } from 'three'
 
 export default function Lines() {

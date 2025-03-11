@@ -1,6 +1,6 @@
 'use client'
 import { afterImage } from '@/libs/util/three/afterImage'
-import { Asemic, ParticlesBrush } from '@asemic'
+import { Asemic, Brush, ParticlesBrush } from '@asemic'
 import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 import { vec2 } from 'three/tsl'
 

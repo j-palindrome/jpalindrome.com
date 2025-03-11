@@ -1,57 +1,161 @@
 'use client'
-import { useAsemic } from '@/libs/asemic/src/Asemic'
-// line that may or may not intersect
-import PointBrush from '@/libs/asemic/src/components/DashBrush'
-import { toTuple } from '@/libs/asemic/src/typeGuards'
+import GroupBuilder from '@/libs/asemic/src/Builder'
+import { useInterval } from '@/libs/util/react/dom'
+import { useState } from 'react'
+import { Asemic, AsemicCanvas } from '@asemic'
+import { Brush } from '@asemic'
 
-// grid-based graphic design
-export default function Genuary30() {
-  const { h, mouse } = useAsemic()
+const yin = (b: GroupBuilder) =>
+  b
+    .newCurve([0, 0], [0.4, 0])
+    .newCurve([0.6, 0], [1, 0])
+    .transform({ translate: [0, 1 / 6] })
+const yang = (b: GroupBuilder) =>
+  b.newCurve([0, 0], [1, 0]).transform({ translate: [0, 1 / 6] })
+const hexagram = (b, map: ('yin' | 'yang')[]) => {
+  b.newGroup()
+  map.forEach((s) => (s === 'yin' ? yin(b) : yang(b)))
+  return b
+}
+const days: {
+  asemic: [
+    ((b: GroupBuilder) => GroupBuilder)[],
+    ((b: GroupBuilder) => GroupBuilder)[],
+  ]
+  poem: [string, string, string, string, string, string]
+}[] = [
+  {
+    poem: [
+      'abundance alternates to brilliance injured',
+      'one line giving way, thunder breaking way to earth',
+      'go outside, sing one line of text, and singe the way into the darkness',
+      'in praise of shadows: "As I have said there are certain prerequisites: a degree of dimness, absolute cleanliness, and quiet so complete one can hear the hum of a mosquito." (4)',
+      'i treated it as a rhythm: going throughout the day, humming in my head',
+      'the song was best heard against reflections, in transit, when something was in the way',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yang', 'yin', 'yang', 'yang', 'yin', 'yin'])],
+      [(b) => hexagram(b, ['yang', 'yin', 'yang', 'yin', 'yin', 'yin'])],
+    ],
+  },
+  {
+    poem: [
+      'eliminating alternates to decrease',
+      'soldiers push out the darkness, then the society falls through its middle',
+      'go through your day watching overflows.',
+      'andy warhol: "As soon as I became a loner in my own mind, that\'s when I got what you might call a "following"',
+      'i make a point to talk too much, just a bit, in social interactions',
+      'the final words are always affirmations',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yang', 'yang', 'yang', 'yang', 'yang', 'yin'])],
+      [(b) => hexagram(b, ['yang', 'yang', 'yin', 'yin', 'yin', 'yang'])],
+    ],
+  },
+  {
+    poem: [
+      'return alternates to union',
+      'the final month, the solid line moves upwards breaking through the ground',
+      'plant a small seed',
+      'At Work With Grotowski: "You must turn back, toward the seed of the first  proposition and find that which, from the point of view of this primary motivation, requires a new restructuring of the whole" (45).',
+      'i set an alarm for early the next morning, intending to move at the waking of the day',
+      'the fog is heavy in my head, but there is some optimism',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yang', 'yin', 'yin', 'yin', 'yin', 'yin'])],
+      [(b) => hexagram(b, ['yin', 'yin', 'yin', 'yin', 'yang', 'yin'])],
+    ],
+  },
+  {
+    poem: [
+      'contention alternates to not yet fulfilled',
+      'an imbalanced breakage moves to balanced energies',
+      'do not seek to resolve the tension',
+      'Hui: "in Europe, philosophy\'s attempt to separate itself from mythology is precisely conditioned by mythology, meaning that mythology reveals the germinal form of such a mode of philosophising" (10-11)',
+      'i choose to not write computer code, instead describing it in language',
+      'the words lack clarity, but can get more thinking done',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yin', 'yin', 'yin', 'yin', 'yang', 'yin'])],
+      [(b) => hexagram(b, ['yin', 'yang', 'yin', 'yang', 'yin', 'yang'])],
+    ],
+  },
+  {
+    poem: [
+      'childhood alternates to adorning',
+      'a spring flows out of a mountain, the child tending towards adolescence',
+      'water this mirror, gather up your courage',
+      '"There are both a very large quantity and a very large variety of types of information and research data feeding into and decanting from the project" (Performance as Research)',
+      'i sing into the reading of words, repeating them different ways',
+      'they become sounds, and the sounds become ideas',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yin', 'yang', 'yin', 'yin', 'yin', 'yang'])],
+      [(b) => hexagram(b, ['yang', 'yin', 'yang', 'yin', 'yin', 'yang'])],
+    ],
+  },
+  {
+    poem: [
+      'great exceeding alternates to advance',
+      'the supportive solid is framed by yielding, then merge to flow forwards',
+      'establish a foundation, then leap',
+      'language and myth: "word and mythic image, which once confronted the human mind as hard realistic powers, have now cast off all reality and effectuality; they have become a light, bright ether in which the spirit can move without let or hindrance"',
+      "i don't write, but instead go up to the seventh floor and open the window",
+      'feeling the full air of the city, the space between myself and the ground',
+    ],
+    asemic: [
+      [(b) => hexagram(b, ['yin', 'yang', 'yang', 'yang', 'yang', 'yin'])],
+      [(b) => hexagram(b, ['yang', 'yang', 'yang', 'yin', 'yin', 'yin'])],
+    ],
+  },
+]
+
+export default function IChing() {
+  const [day, setDay] = useState(0)
+
+  const [timeSwitch, setTimeSwitch] = useState(0)
+  useInterval(() => setTimeSwitch((timeSwitch) => (timeSwitch ? 0 : 1)), 1000)
 
   return (
-    <PointBrush
-      params={{ grid: toTuple(10, 10 * h) }}
-      renderInit
-      spacing={20}
-      onInit={(b) => {
-        b.repeatGrid([3, 3 * h], ({ p, count, pCenter, iNumber }) => {
-          b.transform({
-            reset: true,
-            push: true,
-            translate: pCenter
-              .multiply({ x: 1, y: h })
-              .add(
-                b.vec2
-                  .set(
-                    b.noise([p.x, iNumber, b.time / 10], { signed: true }),
-                    b.noise([p.x, iNumber, b.time / 10], { signed: true }),
-                  )
-                  .multiplyScalar(0.1),
-              ),
-            scale:
-              (1 / count.x) *
-              b.getRange(b.noise([iNumber, b.time / 5]), [1, 3]),
-          })
-            .newCurve()
-            .repeat(7, ({ p: p2, pComplete, count }) =>
-              b.newPoints([
-                0,
-                1,
-                {
-                  rotate: p2,
-                  reset: 'last',
-                  scale: b.noise([p2, b.time * 0.3]),
-                  thickness: b.getRange(
-                    b.noise([p2, b.time * 0.3], { advance: false }),
-                    [1, 12],
-                  ),
-                },
-              ]),
-            )
-            .transform({ reset: 'pop' })
-        })
-      }}
-      adjustEnds='loop'
-    />
+    <div className='flex h-screen w-screen flex-col overflow-auto bg-black font-mono text-white'>
+      <div className='flex justify-around p-2 *:rounded-lg *:border *:p-2 *:transition-colors *:duration-300'>
+        <button className='hover:bg-white/30' onClick={() => setDay(0)}>
+          Day 1
+        </button>
+        <button className='hover:bg-white/30' onClick={() => setDay(1)}>
+          Day 2
+        </button>
+        <button className='hover:bg-white/30' onClick={() => setDay(2)}>
+          Day 3
+        </button>
+        <button className='hover:bg-white/30' onClick={() => setDay(3)}>
+          Day 4
+        </button>
+        <button className='hover:bg-white/30' onClick={() => setDay(4)}>
+          Day 5
+        </button>
+        <button className='hover:bg-white/30' onClick={() => setDay(5)}>
+          Day 6
+        </button>
+      </div>
+      <div className='relative h-full grow py-4'>
+        {
+          <AsemicCanvas>
+            <Asemic>
+              {days[day].asemic[timeSwitch].map((x, i) => (
+                <Brush type='dash' key={i} render={x} />
+              ))}
+            </Asemic>
+          </AsemicCanvas>
+        }
+        {
+          <div className='absolute left-0 top-0 flex h-full w-full flex-col justify-around px-4 text-center font-serif text-sm italic'>
+            {days[day].poem.map((x, i) => (
+              <div key={i}>{x}</div>
+            ))}
+          </div>
+        }
+      </div>
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import { Asemic, ParticlesBrush, GroupBuilder } from '@asemic'
+import { Asemic, ParticlesBrush, GroupBuilder, Brush } from '@asemic'
 import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 
 export default function Genuary18() {

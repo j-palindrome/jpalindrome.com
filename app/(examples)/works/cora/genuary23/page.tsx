@@ -1,6 +1,6 @@
 'use client'
 
-import { Asemic, DashBrush, DotBrush } from '@asemic'
+import { Asemic, Brush, DashBrush, DotBrush } from '@asemic'
 import { afterImage } from '@/libs/util/three/afterImage'
 import { gaussianBlur } from '@/libs/util/three/effects'
 import { screenUV, select, time, uv, vec2, vec4 } from 'three/tsl'

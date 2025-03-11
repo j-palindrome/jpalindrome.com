@@ -1,14 +1,15 @@
 'use client'
 
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Asemic } from '@asemic'
+import { Brush } from '@asemic'
 
 // Inspired by brutalism
 export default function Genuary23() {
   return (
     <Asemic>
       {(s) => (
-        <MeshBrush
+        <Brush
+          type='line'
           onInit={(b) => {
             b.repeat(10, () =>
               b.newShape(6, {

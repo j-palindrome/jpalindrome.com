@@ -1,7 +1,7 @@
 'use client'
 
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { Asemic } from '@asemic'
+import { Brush } from '@asemic'
 import { afterImage } from '@/libs/util/three/afterImage'
 import { gaussianBlur } from '@/libs/util/three/effects'
 import { screenUV, select, time, uv, vec2, vec4 } from 'three/tsl'
@@ -18,7 +18,8 @@ export default function Genuary23() {
       }}
     >
       {(scene) => (
-        <PointBrush
+        <Brush
+          type='dash'
           onInit={(b) =>
             b.repeat(200, () =>
               b.newCurve(

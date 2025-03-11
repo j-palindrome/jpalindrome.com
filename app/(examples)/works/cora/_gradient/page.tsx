@@ -1,6 +1,6 @@
 'use client'
-import { useAsemic } from '@/libs/asemic/src/Asemic'
-import DotBrush from '@/libs/asemic/src/components/DotBrush'
+import { useAsemic } from '@asemic'
+import { Brush } from '@asemic'
 // line that may or may not intersect
 
 import { extend } from '@react-three/fiber'
@@ -23,14 +23,16 @@ export default function Genuary29() {
     'float',
   )
   return (
-    <DotBrush
+    <Brush
+      type='dot'
       curveColor={(input) => {
         return vec4(
           input.xyz,
           sin(range(1, 3).mul(time)).add(1).div(2).mul(input.a),
         )
       }}
-      onInit={(b) =>
+    >
+      {(b) =>
         b
           .transform({ scale: [1, h] })
           .transform({
@@ -51,6 +53,6 @@ export default function Genuary29() {
             ])
           })
       }
-    />
+    </Brush>
   )
 }

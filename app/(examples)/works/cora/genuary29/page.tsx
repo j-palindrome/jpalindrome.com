@@ -2,7 +2,7 @@
 import { Asemic, useAsemic } from '@asemic'
 // line that may or may not intersect
 
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Brush } from '@asemic'
 import { toTuple } from '@/libs/asemic/src/typeGuards'
 
 // grid-based graphic design
@@ -10,7 +10,7 @@ export default function Genuary29() {
   const { h, mouse } = useAsemic()
   const params = { grid: toTuple(10, 10 * h) }
   return (
-    <MeshBrush renderInit maxLength={1}>
+    <Brush type='line' renderInit maxLength={1}>
       {(b) => {
         b.clear()
         b.repeatGrid(params.grid, ({ p }) => {

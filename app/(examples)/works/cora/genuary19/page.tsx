@@ -1,5 +1,5 @@
 'use client'
-import { Asemic, LineBrush, SceneBuilder } from '@asemic'
+import { Asemic, Brush, LineBrush, SceneBuilder } from '@asemic'
 import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 import { hash, time, vec2 } from 'three/tsl'
 

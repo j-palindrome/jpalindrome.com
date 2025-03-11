@@ -1,13 +1,11 @@
 'use client'
 // line that may or may not intersect
 
-import { Asemic, DashBrush } from '@asemic'
+import { Asemic, Brush } from '@asemic'
 import {
   fract,
   hash,
-  If,
   mx_noise_float,
-  mx_noise_vec3,
   range,
   select,
   time,

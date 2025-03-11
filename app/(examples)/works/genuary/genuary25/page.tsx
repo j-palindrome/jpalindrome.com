@@ -1,8 +1,8 @@
 'use client'
 // line that may or may not intersect
 
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Asemic } from '@asemic'
+import { Brush } from '@asemic'
 import { afterImage } from '@/libs/util/three/afterImage'
 import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 import { uv } from 'three/tsl'
@@ -18,8 +18,14 @@ export default function Genuary23() {
     >
       {(s) => (
         <>
-          <MeshBrush
-            onInit={(b) => {
+          <Brush
+            type='line'
+            renderInit={true}
+            maxLength={1}
+            maxPoints={50}
+            adjustEnds={false}
+          >
+            {(b) => {
               if (b.time === 0) {
                 b.newCurve([0, 0, { thickness: 2 }], [0.5, 0.5])
               }
@@ -36,11 +42,7 @@ export default function Genuary23() {
                 b.curves[0].splice(0, 1)
               }
             }}
-            renderInit={true}
-            maxLength={1}
-            maxPoints={50}
-            adjustEnds={false}
-          />
+          </Brush>
         </>
       )}
     </Asemic>

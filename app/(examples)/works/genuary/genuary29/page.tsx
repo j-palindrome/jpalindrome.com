@@ -1,8 +1,8 @@
 'use client'
-import { useAsemic } from '@/libs/asemic/src/Asemic'
+import { useAsemic } from '@asemic'
 // line that may or may not intersect
 
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Brush } from '@asemic'
 import { toTuple } from '@/libs/asemic/src/typeGuards'
 
 // grid-based graphic design
@@ -10,7 +10,8 @@ export default function Genuary29() {
   const { h, mouse } = useAsemic()
 
   return (
-    <MeshBrush
+    <Brush
+      type='line'
       params={{ grid: toTuple(10, 10 * h) }}
       renderInit
       maxLength={1}

@@ -1,8 +1,8 @@
 'use client'
 // line that may or may not intersect
 
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { Asemic } from '@asemic'
+import { Brush } from '@asemic'
 import {
   fract,
   hash,
@@ -21,7 +21,8 @@ export default function Genuary26() {
   return (
     <Asemic>
       {(s) => (
-        <PointBrush
+        <Brush
+          type='dash'
           renderInit
           onInit={(b) => {
             b.clear()

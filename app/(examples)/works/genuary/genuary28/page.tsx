@@ -1,7 +1,6 @@
 'use client'
 // line that may or may not intersect
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Asemic, Brush } from '@asemic'
 import { bezier2 } from '@/libs/util/three/curves'
 import { positionLocal, vec2, vec4 } from 'three/tsl'
 
@@ -26,44 +25,15 @@ export default function Genuary26() {
     'forlorn',
     'mismanaged',
   ]
+  const params = { index: 0, lastTime: 0 }
   return (
     <Asemic>
       {(s) =>
         words.map((word, i) => (
-          <MeshBrush
+          <Brush
+            type='line'
             key={i}
             renderInit
-            params={{ index: 0, lastTime: 0 }}
-            onInit={(b) => {
-              if (b.time === 0) {
-                b.newText(
-                  word,
-                  { varyThickness: 4 },
-                  {
-                    scale: 1 / 10,
-                    translate: [0, -0.2 + i * -0.2],
-                    thickness: 3,
-                    alpha: Math.random(),
-                  },
-                )
-              } else {
-                b.curves.flat().forEach((p) =>
-                  p.add({
-                    x: 0,
-                    y:
-                      3 * b.hash(b.params.index) * (b.time - b.params.lastTime),
-                  }),
-                )
-                if (b.curves[0][0].y > s.h) {
-                  b.params.index++
-                  b.curves.flat().forEach((p) => {
-                    p.sub({ x: 0, y: s.h + 0.2 })
-                    p.alpha = b.hash(b.params.index)
-                  })
-                }
-                b.params.lastTime = b.time
-              }
-            }}
             pointColor={(p) => {
               return vec4(
                 p.xyz,
@@ -77,7 +47,33 @@ export default function Genuary26() {
                   .mul(p.a),
               )
             }}
-          />
+          >
+            {(b) => {
+              if (b.time === 0) {
+                b.newText(word, {
+                  thickness: () => Math.random() * 8,
+                  scale: 1 / 10,
+                  translate: [0, -0.2 + i * -0.2],
+                  alpha: Math.random(),
+                })
+              } else {
+                b.curves.flat().forEach((p) =>
+                  p.add({
+                    x: 0,
+                    y: 3 * b.hash(params.index) * (b.time - params.lastTime),
+                  }),
+                )
+                if (b.curves[0][0].y > s.h) {
+                  params.index++
+                  b.curves.flat().forEach((p) => {
+                    p.sub({ x: 0, y: s.h + 0.2 })
+                    p.alpha = b.hash(params.index)
+                  })
+                }
+                params.lastTime = b.time
+              }
+            }}
+          </Brush>
         ))
       }
     </Asemic>

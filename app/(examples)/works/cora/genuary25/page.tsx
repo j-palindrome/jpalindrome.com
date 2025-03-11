@@ -2,7 +2,7 @@
 // line that may or may not intersect
 
 import { Asemic, LineBrush } from '@asemic'
-import MeshBrush from '@/libs/asemic/src/components/LineBrush'
+import { Brush } from '@asemic'
 import { afterImage } from '@/libs/util/three/afterImage'
 import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 import { uv } from 'three/tsl'

@@ -2,7 +2,7 @@
 // line that may or may not intersect
 
 import { Asemic, DashBrush } from '@asemic'
-import PointBrush from '@/libs/asemic/src/components/DashBrush'
+import { Brush } from '@asemic'
 import { afterImage } from '@/libs/util/three/afterImage'
 import {
   float,

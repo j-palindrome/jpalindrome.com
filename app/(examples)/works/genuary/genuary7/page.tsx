@@ -1,25 +1,19 @@
 'use client'
 
-import { Asemic, AsemicCanvas } from '@asemic'
-import AsemicInput from '@asemic'
-import { useHeight } from '@asemic'
-import { Plane, useVideoTexture } from '@react-three/drei'
-import { extend, Object3DNode, useFrame, useThree } from '@react-three/fiber'
-import { Suspense, useEffect, useRef, useState } from 'react'
-import { SRGBColorSpace, Vector2, VideoTexture } from 'three'
+import { AsemicCanvas, useHeight } from '@asemic'
+import { extend, ThreeElement, useFrame } from '@react-three/fiber'
+import { useEffect, useRef, useState } from 'react'
+import { VideoTexture } from 'three'
 import {
   float,
   Fn,
   If,
-  mx_noise_float,
   mx_noise_vec3,
-  screenSize,
   texture,
   time,
   uniform,
   uv,
   vec2,
-  vec3,
   vec4,
   viewportSize,
 } from 'three/tsl'
@@ -27,19 +21,16 @@ import { MeshBasicNodeMaterial } from 'three/webgpu'
 extend({ MeshBasicNodeMaterial })
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    meshBasicNodeMaterial: Object3DNode<
-      MeshBasicNodeMaterial,
-      typeof MeshBasicNodeMaterial
-    >
+    meshBasicNodeMaterial: ThreeElement<typeof MeshBasicNodeMaterial>
   }
 }
 
 export default function Genuary7() {
   const [stream, setStream] = useState<VideoTexture | null>(null)
   useEffect(() => {
-    new AsemicInput('screen', { dimensions: [1080, 1920] })
-      .init()
-      .then((tex) => setStream(tex))
+    // new AsemicInput('screen', { dimensions: [1080, 1920] })
+    //   .init()
+    //   .then((tex) => setStream(tex))
   }, [])
 
   return (
@@ -52,7 +43,7 @@ export default function Genuary7() {
 }
 
 function Scene({ src }) {
-  const mat = useRef()
+  const mat = useRef<any>(null!)
   const distance = uniform(0.5)
   useFrame(({ clock }) => {
     // distance.value = Math.sin(((clock.elapsedTime % 3) / 3) * Math.PI * 2)

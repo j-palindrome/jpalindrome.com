@@ -1,37 +1,27 @@
+import { useHeight } from '@asemic'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { WebGPURenderer } from 'three/src/Three.WebGPU.js'
 import {
-  storage,
+  float,
+  floor,
+  Fn,
   If,
-  vec3,
-  not,
+  instanceIndex,
+  storage,
+  uint,
   uniform,
   uv,
-  uint,
-  float,
-  Fn,
-  vec2,
-  abs,
-  int,
-  invocationLocalIndex,
-  workgroupArray,
   uvec2,
-  floor,
-  instanceIndex,
-  workgroupBarrier,
-  atomicAdd,
-  atomicStore,
-  workgroupId,
-  vec4,
+  vec2,
+  vec3,
 } from 'three/tsl'
 import {
   MeshBasicNodeMaterial,
   StorageBufferAttribute,
   StorageInstancedBufferAttribute,
 } from 'three/webgpu'
-import { WebGPURenderer } from 'three/src/Three.WebGPU.js'
-import { useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
-import { useHeight } from '@asemic'
 
 enum StepType {
   NONE,

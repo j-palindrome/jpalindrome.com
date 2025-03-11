@@ -1,8 +1,8 @@
 'use client'
 // line that may or may not intersect
 
-import { Asemic } from '@/libs/asemic/src/Asemic'
-import ParticlesBrush from '@/libs/asemic/src/components/ParticlesBrush'
+import { Asemic } from '@asemic'
+import { Brush } from '@asemic'
 
 // Inspired by brutalism
 export default function Genuary26() {
