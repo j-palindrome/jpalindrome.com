@@ -2,19 +2,17 @@ import '../../tailwind.css'
 import Scene from './scene'
 
 export const metadata = {
-  title: 'Jay Reinier'
+  title: 'Jay Reinier',
 }
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode
 }) {
   return (
     <html lang='en'>
-      <body className='bg-black'>
-        <Scene>{children}</Scene>
-      </body>
+      <body className='bg-black'>{children}</body>
     </html>
   )
 }

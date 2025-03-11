@@ -315,8 +315,8 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
 
     this.settings = {
       ...defaultSettings,
-      ...settings,
       ...this.getDefaultBrushSettings(),
+      ...settings,
     }
     if (this.settings.maxPoints === 0) {
       this.settings.maxPoints = max(this.group.curves.flatMap((x) => x.length))!

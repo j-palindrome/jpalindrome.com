@@ -42,6 +42,7 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
       initialSpread: true,
       speedMax: 1,
       speedMin: 0.4,
+      speedFrame: 1,
       particleSize: 1,
       particleVelocity: (input) => input,
       particlePosition: (input) => input,
@@ -64,7 +65,7 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
       depthWrite: false,
     })
 
-    const timeScale = uniform(1)
+    const timeScale = uniform(this.settings.speedFrame)
     const positionBuffer = instancedArray(count, 'vec2')
     const velocityBuffer = instancedArray(count, 'vec2')
     const colorBuffer = instancedArray(count, 'vec4')
@@ -141,21 +142,24 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
         const distance = toAttractor.length()
         const gravityStrength = thickness.div(distance).pow(2).toVar()
         const direction = toAttractor.normalize()
-        const gravityForce = direction
-          .mul(gravityStrength)
-          .mul(this.settings.attractorPull)
-        If(distance.greaterThan(float(1).div(screenSize.x)), () => {
-          force.addAssign(gravityForce)
-        })
+        if (this.settings.attractorPull) {
+          const gravityForce = direction
+            .mul(gravityStrength)
+            .mul(this.settings.attractorPull)
+          If(distance.greaterThan(float(1).div(screenSize.x)), () => {
+            force.addAssign(gravityForce)
+          })
+        }
+        if (this.settings.attractorPush) {
+          // spinning
+          const spinningForce = vec2(cos(rotation), sin(rotation))
+            .normalize()
+            .mul(gravityStrength)
+            .mul(this.settings.attractorPush)
+          // const spinningVelocity = spinningForce.cross(toAttractor)
+          force.addAssign(spinningForce)
+        }
 
-        // spinning
-        const spinningForce = vec2(cos(rotation), sin(rotation))
-          .normalize()
-          .mul(gravityStrength)
-          .mul(this.settings.attractorPush)
-        // const spinningVelocity = spinningForce.cross(toAttractor)
-        force.addAssign(spinningForce)
-        // TODO: bring back distance
         color.addAssign(
           thisColor.mul(max(0, thickness.sub(distance).div(thickness))),
         )
@@ -210,7 +214,6 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
 
     material.colorNode = Fn(() => {
       vUv.assign(screenUV.toVar())
-      // return vec4(1, 1, 1, 1)
       return this.settings.pointColor(
         // vec4(1, 1, 1, 1),
         colorBuffer.element(instanceIndex),

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "dev:sanity": "cd sanity && sanity dev",
     "build": "next build",
     "start": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",

@@ -109,6 +109,7 @@ declare global {
           speedMax: number
           speedMin: number
           speedDamping: number
+          speedFrame: number
           particleSize: number
           attractorPull: number
           attractorPush: number

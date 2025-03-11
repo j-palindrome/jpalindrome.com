@@ -11,6 +11,7 @@ const nextConfig = {
   experimental: {
     taint: true,
   },
+  devIndicators: false,
   typescript: {
     ignoreBuildErrors: true,
   },
