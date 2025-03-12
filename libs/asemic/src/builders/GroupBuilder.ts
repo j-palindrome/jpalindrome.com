@@ -128,7 +128,7 @@ export default class GroupBuilder extends Builder {
   getIntersect(progress: number, curve: number = -1) {
     if (curve < 0) curve += this.curves.length
     if (progress < 0) progress += 1
-    return this.getAlongCached(progress, curve)
+    return this.fromPoint(this.getAlongCached(progress, curve))
   }
 
   fromPoint(point: Vector2) {

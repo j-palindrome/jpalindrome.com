@@ -1,4 +1,4 @@
-import { Texture, TypedArray, Vector2 } from 'three'
+import { Color, Texture, TypedArray, Vector2 } from 'three'
 import Backend from 'three/src/renderers/common/Backend.js'
 import { float, mrt, varying, vec2, vec4 } from 'three/tsl'
 import GroupBuilder from './builders/GroupBuilder'
@@ -27,7 +27,7 @@ declare global {
   type CoordinateSettings = {
     strength: number
     thickness: number
-    color: [number, number, number]
+    color: [number, number, number] | Color
     alpha: number
   }
   type ProgressInfo = {

@@ -138,11 +138,13 @@ export class LineBrush extends BrushBuilder<'line'> {
     const mesh = new THREE.Mesh(geometry, material)
     this.info.material = material
     this.info.geometry = geometry
+    this.info.mesh = mesh
     this.scene.add(mesh)
   }
 
   protected onDispose() {
     this.info.material.dispose()
     this.info.geometry.dispose()
+    this.scene.remove(this.info.mesh)
   }
 }

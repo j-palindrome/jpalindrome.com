@@ -51,6 +51,7 @@ export function AsemicCanvas({
   highBitDepth?: boolean
 } & React.PropsWithChildren) {
   const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
+  const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null!)
   const [started, setStarted] = useState(!useAudio ? true : false)
   // const [recording, setRecording] = useState(false)
@@ -105,16 +106,18 @@ export function AsemicCanvas({
       className={`relative ${className}`}
       style={{ height, width, ...style }}
     >
-      <Toggle
-        label='pause'
-        cb={(state) => {
-          console.log('state;', state, 'audio', audio)
+      {useAudio && (
+        <Toggle
+          label='pause'
+          cb={(state) => {
+            console.log('state;', state, 'audio', audio)
 
-          if (state && !audio) {
-            initAudio()
-          } else setStarted(state)
-        }}
-      ></Toggle>
+            if (state && !audio) {
+              initAudio()
+            } else setStarted(state)
+          }}
+        ></Toggle>
+      )}
       {/* @ts-ignore */}
       <Canvas
         onClick={(ev) => {

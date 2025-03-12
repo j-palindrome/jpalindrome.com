@@ -52,7 +52,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
       this.info.instancesPerCurve * this.settings.maxCurves
 
     const geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
-    geometry.translate(this.settings.align - 0.5, 0.5, 0)
+    geometry.translate(0, 0, 0)
     const material = new SpriteNodeMaterial({
       transparent: true,
       depthWrite: false,
@@ -150,8 +150,8 @@ export class DashBrush extends BrushBuilder<'dash'> {
     material.rotationNode = rotation
 
     material.scaleNode = vec2(
-      thickness,
       float(this.settings.dashSize).div(screenSize.x),
+      thickness,
     )
     material.colorNode = this.settings.pointColor(color, {
       progress,

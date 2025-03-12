@@ -1,9 +1,10 @@
-import { Vector2 } from 'three'
+import { Color, Vector2 } from 'three'
 import { defaultCoordinateSettings } from './Builder'
 
 export default class PointBuilder extends Vector2 {
   strength: CoordinateSettings['strength'] = defaultCoordinateSettings.strength
-  color: CoordinateSettings['color'] = defaultCoordinateSettings.color
+  color: [number, number, number] =
+    defaultCoordinateSettings.color as unknown as [number, number, number]
   alpha: CoordinateSettings['alpha'] = defaultCoordinateSettings.alpha
   thickness: CoordinateSettings['thickness'] =
     defaultCoordinateSettings.thickness
@@ -16,6 +17,8 @@ export default class PointBuilder extends Vector2 {
       ...(point instanceof Vector2 ? [point.x, point.y] : [point[0], point[1]]),
     )
     Object.assign(this, settings)
+    if (settings.color instanceof Color)
+      this.color = [settings.color.r, settings.color.g, settings.color.b]
   }
 
   lerpRandom(point: Vector2) {

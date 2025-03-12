@@ -233,6 +233,9 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
         }
       })
     })
+    position.assign(
+      this.settings.pointPosition(position, { builder: this.group, progress }),
+    )
     if (extra) {
       extra.thickness?.assign(
         this.settings
@@ -330,6 +333,122 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
       this.settings.maxCurves = this.group.curves.length
     }
     const size = this.renderer.getDrawingBufferSize(new Vector2())
+    this.info = {
+      instancesPerCurve: Math.max(
+        1,
+        Math.floor(
+          this.settings.spacingType === 'pixel'
+            ? (this.settings.maxLength * size.width) / this.settings.spacing
+            : this.settings.spacingType === 'width'
+              ? (this.settings.maxLength * size.width) /
+                (this.settings.spacing * size.width)
+              : this.settings.spacingType === 'count'
+                ? this.settings.spacing
+                : 0,
+        ),
+      ),
+      curvePositionArray: instancedArray(
+        this.settings.maxPoints * this.settings.maxCurves,
+        'vec4',
+      ),
+      curveColorArray: instancedArray(
+        this.settings.maxPoints * this.settings.maxCurves,
+        'vec4',
+      ),
+      loadPositions: uniformArray(
+        range(this.settings.maxPoints * this.settings.maxCurves).map(
+          (x) => new Vector4(),
+        ),
+        'vec4',
+      ),
+      loadColors: uniformArray(
+        range(this.settings.maxPoints * this.settings.maxCurves).map(
+          (x) => new Vector4(),
+        ),
+        'vec4',
+      ),
+      controlPointCounts: uniformArray(
+        this.group.curves.map((x) => x.length),
+        'int',
+      ),
+    }
+
+    this.advanceControlPoints = Fn(() => {
+      const pointI = instanceIndex.modInt(this.settings.maxPoints)
+      const curveI = instanceIndex.div(this.settings.maxPoints)
+      const info = {
+        progress: curveI
+          .toFloat()
+          .add(
+            pointI
+              .toFloat()
+              .div(this.info.controlPointCounts.element(curveI).sub(1)),
+          ),
+        builder: this.group,
+      }
+      const index = curveI.mul(this.settings.maxPoints).add(pointI)
+      const thisPosition = this.info.loadPositions.element(index)
+      this.info.curvePositionArray.element(index).assign(
+        this.settings.curvePosition(thisPosition, {
+          ...info,
+          lastFrame: this.info.curvePositionArray.element(index),
+        }),
+      )
+      const thisColor = this.info.loadColors.element(index)
+      this.info.curveColorArray.element(index).assign(
+        this.settings.curveColor(thisColor, {
+          ...info,
+          lastFrame: this.info.curveColorArray.element(index),
+        }),
+      )
+    })().compute(this.settings.maxPoints * this.settings.maxCurves)
+
+    this.loadControlPoints = Fn(() => {
+      this.info.curvePositionArray
+        .element(instanceIndex)
+        .assign(this.info.loadPositions.element(instanceIndex))
+      this.info.curveColorArray
+        .element(instanceIndex)
+        .assign(this.info.loadColors.element(instanceIndex))
+    })().compute(this.settings.maxCurves * this.settings.maxPoints)
+
+    this.nextTime =
+      (typeof this.settings.renderStart === 'function'
+        ? this.settings.renderStart()
+        : this.settings.renderStart) / 1000
+
+    this.onInit()
+    this.frame(0)
+
+    if (this.settings.onClick) {
+      this.renderer.domElement.addEventListener(
+        'click',
+        this.onClick.bind(this),
+      )
+    }
+    if (this.settings.onDrag) {
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onDrag.bind(this),
+      )
+    }
+    if (this.settings.onOver) {
+      this.renderer.domElement.addEventListener(
+        'mousemove',
+        this.onOver.bind(this),
+      )
+    }
+    if (this.settings.maxPoints === 0) {
+      this.settings.maxPoints = max(this.group.curves.flatMap((x) => x.length))!
+    }
+    if (this.settings.maxLength === 0) {
+      this.settings.maxLength = max(
+        this.group.curves.map((x) => this.group.getLength(x)),
+      )!
+    }
+    if (this.settings.maxCurves === 0) {
+      this.settings.maxCurves = this.group.curves.length
+    }
     this.info = {
       instancesPerCurve: Math.max(
         1,

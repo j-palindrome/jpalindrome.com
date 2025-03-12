@@ -146,7 +146,7 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
           const gravityForce = direction
             .mul(gravityStrength)
             .mul(this.settings.attractorPull)
-          If(distance.greaterThan(float(1).div(screenSize.x)), () => {
+          If(distance.greaterThan(float(thickness).div(2)), () => {
             force.addAssign(gravityForce)
           })
         }
@@ -161,7 +161,7 @@ export class ParticlesBrush extends BrushBuilder<'particles'> {
         }
 
         color.addAssign(
-          thisColor.mul(max(0, thickness.sub(distance).div(thickness))),
+          thisColor.div(this.settings.maxCurves * this.info.instancesPerCurve),
         )
         // color.addAssign(thisColor)
         // color.addAssign(vec4(1, 1, 1, 1).div(100))
