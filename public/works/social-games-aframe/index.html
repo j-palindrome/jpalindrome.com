@@ -1,0 +1,40 @@
+<html>
+
+<head>
+  <script src='https://aframe.io/releases/1.6.0/aframe.min.js'></script>
+  <base href="/works/social-games-aframe/" />
+</head>
+
+<body style="background: black">
+  <a-scene>
+    <a-assets>
+      <img id="sky"
+        src="https://cdn.sanity.io/files/nctksjox/production/db91136603fc5a032d0fdbf2789f0d01bbc78a12.jpg" />
+      <video id="a-bender" style="position:absolute; z-index: 100;" autoplay loop crossorigin="anonymous" preload="auto"
+        src="https://cdn.sanity.io/files/nctksjox/production/d09aae9c2afe738a2319896b3df79a9cef1cbd38.mp4">
+      </video>
+      <video id="into-oblivion" crossorigin="anonymous" autoplay loop>
+        <source src="https://cdn.sanity.io/files/nctksjox/production/05ab5b85bdadd0e1521a48ca5e710a17a74b0874.webm"
+          type="video/webm">
+      </video>
+
+      <audio id="a-bender-audio" crossorigin="anonymous" preload="auto"
+        src="https://cdn.sanity.io/files/nctksjox/production/01c5688cc777bc30beb625469fd2653234cca967.mp3" />
+      <audio id="into-oblivion-audio" crossorigin="anonymous" preload="auto"
+        src="https://cdn.sanity.io/files/nctksjox/production/180685b77e7f4903498d5fcdc9ec43face3e7689.mp3" />
+    </a-assets>
+
+    <a-plane src="#a-bender" height='30' width='50' position="0 1.6 -40" rotation="0 0 0"></a-plane>
+    <a-sound src="#a-bender-audio" autoplay="true" position="0 1.6 -40" loop="true" volume="1.0" volume="30.0"
+      distanceModel="inverse" rolloffFactor="0.5" maxDistance="100" refDistance="100" />
+
+    <a-plane src="#into-oblivion" height='30' width='50' position="-40 1.6 40" rotation="0 90 0"></a-plane>
+    <a-sound src="#into-oblivion-audio" autoplay="true" position="-40 1.6 40" loop="true" volume="30.0"
+      distanceModel="inverse" rolloffFactor="0.5" maxDistance="100" refDistance="100" />
+
+    <a-sky src="#sky"></a-sky>
+  </a-scene>
+
+</body>
+
+</html>
