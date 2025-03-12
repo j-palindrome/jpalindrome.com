@@ -51,7 +51,6 @@ export function AsemicCanvas({
   highBitDepth?: boolean
 } & React.PropsWithChildren) {
   const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
-  const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null!)
   const [started, setStarted] = useState(!useAudio ? true : false)
   // const [recording, setRecording] = useState(false)
