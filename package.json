@@ -11,8 +11,9 @@
     "build-cloudflare": "npx @cloudflare/next-on-pages@1",
     "schema": "cd sanity && sanity schema extract --enforce-required-fields",
     "typegen": "cd sanity && sanity typegen generate",
-    "sync": "git pull && git subtree pull --prefix libs/asemic https://github.com/j-palindrome/asemic.git main --squash && git push https://github.com/j-palindrome/asemic.git `git subtree split --prefix libs/asemic main`:main && git subtree pull --prefix libs/util https://github.com/j-palindrome/util.git main --squash && git push https://github.com/j-palindrome/util.git `git subtree split --prefix libs/util main`:main && git push",
-    "sync:push": "git push https://github.com/j-palindrome/asemic.git `git subtree split --prefix libs/asemic main`:main"
+    "sync": "git pull && git subtree pull --prefix libs/asemic https://github.com/j-palindrome/asemic.git main --squash && git push https://github.com/j-palindrome/asemic.git `git subtree split --prefix libs/asemic main`:main && pnpm sync:util && git push",
+    "sync:util": "git subtree pull --prefix libs/util https://github.com/j-palindrome/util.git main --squash && git push https://github.com/j-palindrome/util.git `git subtree split --prefix libs/util main`:main",
+    "sync:push:asemic": "git push https://github.com/j-palindrome/asemic.git `git subtree split --prefix libs/asemic main`:main"
   },
   "dependencies": {
     "@elemaudio/core": "^4.0.1",
