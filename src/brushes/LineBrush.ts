@@ -10,12 +10,12 @@ import {
   varying,
   vec2,
   vec4,
-  vertexIndex
+  vertexIndex,
 } from 'three/tsl'
 import {
   MeshBasicNodeMaterial,
   StorageInstancedBufferAttribute,
-  WebGPURenderer
+  WebGPURenderer,
 } from 'three/webgpu'
 import BrushBuilder from '../builders/BrushBuilder'
 import GroupBuilder from '../builders/GroupBuilder'
@@ -50,7 +50,7 @@ export class LineBrush extends BrushBuilder<'line'> {
       if (this.settings.adjustEnds === 'loop') {
         const curveStart = currentIndex
         for (let i = 0; i < this.info.instancesPerCurve - 2; i++) {
-          indexes.push(...indexGuide.map(x => x + currentIndex))
+          indexes.push(...indexGuide.map((x) => x + currentIndex))
           currentIndex += 2
         }
         indexes.push(
@@ -59,12 +59,12 @@ export class LineBrush extends BrushBuilder<'line'> {
           curveStart,
           currentIndex + 1,
           curveStart,
-          curveStart + 1
+          curveStart + 1,
         )
         currentIndex += 2
       } else {
         for (let i = 0; i < this.info.instancesPerCurve - 1; i++) {
-          indexes.push(...indexGuide.map(x => x + currentIndex))
+          indexes.push(...indexGuide.map((x) => x + currentIndex))
           currentIndex += 2
         }
       }
@@ -76,7 +76,7 @@ export class LineBrush extends BrushBuilder<'line'> {
       depthWrite: false,
       blending: THREE.NormalBlending,
       side: THREE.DoubleSide,
-      color: 'white'
+      color: 'white',
     })
     material.mrtNode = this.settings.renderTargets
 
@@ -98,15 +98,15 @@ export class LineBrush extends BrushBuilder<'line'> {
           rotation,
           thickness,
           color,
-          progress
-        }
+          progress,
+        },
       )
 
       vUv.assign(
         vec2(
           vertexIndex.div(2).toFloat().div(this.info.instancesPerCurve),
-          select(vertexIndex.modInt(2).equal(0), 0, 1)
-        )
+          select(vertexIndex.modInt(2).equal(0), 0, 1),
+        ),
       )
 
       // thickness.assign(0.1)
@@ -114,11 +114,11 @@ export class LineBrush extends BrushBuilder<'line'> {
         rotateUV(
           vec2(
             thickness.mul(select(vertexIndex.modInt(2).equal(0), -0.5, 0.5)),
-            0
+            0,
           ),
           rotation.add(PI2.mul(0.25)),
-          vec2(0, 0)
-        )
+          vec2(0, 0),
+        ),
       )
       return vec4(position, 0, 1)
     })
@@ -129,8 +129,8 @@ export class LineBrush extends BrushBuilder<'line'> {
       this.settings.pointColor(varying(vec4(), 'color'), {
         progress,
         builder: this.group,
-        uv: vUv
-      })
+        uv: vUv,
+      }),
     )()
 
     material.needsUpdate = true

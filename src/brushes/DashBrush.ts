@@ -16,12 +16,12 @@ import {
   screenSize,
   varying,
   vec2,
-  vec4
+  vec4,
 } from 'three/tsl'
 import {
   SpriteNodeMaterial,
   StorageInstancedBufferAttribute,
-  WebGPURenderer
+  WebGPURenderer,
 } from 'three/webgpu'
 import GroupBuilder from '../builders/GroupBuilder'
 // import { useCurve } from '../util/useControlPoints'
@@ -55,7 +55,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
     geometry.translate(0, 0, 0)
     const material = new SpriteNodeMaterial({
       transparent: true,
-      depthWrite: false
+      depthWrite: false,
     })
     material.mrtNode = this.settings.renderTargets
     const mesh = new THREE.InstancedMesh(geometry, material, MAX_INSTANCE_COUNT)
@@ -69,7 +69,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
 
     const tAttribute = instancedArray(
       new Float32Array(this.info.instancesPerCurve * this.settings.maxCurves),
-      'float'
+      'float',
     )
 
     const updateCurveLengths = Fn(() => {
@@ -98,7 +98,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
         const t = curveStart.add(
           float(i)
             .div(count - 1)
-            .mul(0.999)
+            .mul(0.999),
         )
         this.getBezier(t, thisPoint)
         lastEnd.assign(totalLength)
@@ -112,8 +112,8 @@ export class DashBrush extends BrushBuilder<'dash'> {
               float(i)
                 .sub(1)
                 .add(remapped)
-                .div(count - 1)
-            )
+                .div(count - 1),
+            ),
           )
           Break()
         })
@@ -126,7 +126,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
       return undefined as any
     })().compute(
       this.info.instancesPerCurve * this.settings.maxCurves,
-      undefined as any
+      undefined as any,
     )
 
     const position = vec2().toVar()
@@ -135,28 +135,28 @@ export class DashBrush extends BrushBuilder<'dash'> {
         rotation,
         thickness,
         color,
-        progress
+        progress,
       })
 
       return vec4(
         this.settings.pointPosition(position, {
           progress,
-          builder: this.group
+          builder: this.group,
         }),
         0,
-        1
+        1,
       )
     })()
     material.rotationNode = rotation
 
     material.scaleNode = vec2(
       float(this.settings.dashSize).div(screenSize.x),
-      thickness
+      thickness,
     )
     material.colorNode = this.settings.pointColor(color, {
       progress,
       builder: this.group,
-      uv: varying(vec2(progress, 0.5), 'uv')
+      uv: varying(vec2(progress, 0.5), 'uv'),
     })
     material.needsUpdate = true
     this.scene.add(mesh)
@@ -165,7 +165,7 @@ export class DashBrush extends BrushBuilder<'dash'> {
       mesh,
       material,
       geometry,
-      updateCurveLengths
+      updateCurveLengths,
     })
   }
 

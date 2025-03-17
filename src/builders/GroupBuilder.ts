@@ -549,8 +549,6 @@ ${this.curves
 
     if (settings.center !== undefined) {
       const lineBounds = this.getBounds(flatCurves)
-      console.log(settings.center - lineBounds.center.x)
-
       flatCurves.forEach(point =>
         point.add({ x: settings.center! - lineBounds.center.x, y: 0 })
       )

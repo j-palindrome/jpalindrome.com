@@ -40,8 +40,6 @@ export default function DigiRis() {
   useEventListener(
     'keydown',
     ev => {
-      console.log(ev.key)
-
       switch (ev.key) {
         case 'ArrowLeft':
           setCurrentChild(currentChild - 1)

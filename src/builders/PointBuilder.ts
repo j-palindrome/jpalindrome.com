@@ -11,10 +11,10 @@ export default class PointBuilder extends Vector2 {
 
   constructor(
     point: [number, number] | Vector2 = [0, 0],
-    settings: Partial<CoordinateSettings> = defaultCoordinateSettings
+    settings: Partial<CoordinateSettings> = defaultCoordinateSettings,
   ) {
     super(
-      ...(point instanceof Vector2 ? [point.x, point.y] : [point[0], point[1]])
+      ...(point instanceof Vector2 ? [point.x, point.y] : [point[0], point[1]]),
     )
     Object.assign(this, settings)
     if (settings.color instanceof Color)
@@ -30,7 +30,7 @@ export default class PointBuilder extends Vector2 {
   randomize(point: Vector2) {
     this.add({
       x: point[0] * Math.random() - point[0] / 2,
-      y: point[1] * Math.random() - point[1] / 2
+      y: point[1] * Math.random() - point[1] / 2,
     })
     return this
   }
