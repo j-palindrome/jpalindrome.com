@@ -69,7 +69,11 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
         this.renderer.getDrawingBufferSize(this.size),
       )
       for (let i = 0; i < this.settings.maxCurves; i++) {
-        this.info.controlPointCounts.array[i] = this.group.curves[i].length
+        if (!this.group.curves[i]) {
+          this.info.controlPointCounts.array[i] = 0
+        } else {
+          this.info.controlPointCounts.array[i] = this.group.curves[i].length
+        }
       }
       const loadColorsArray = this.info.loadColors.array as Vector4[]
       const loadPositionsArray = this.info.loadPositions.array as Vector4[]
@@ -104,6 +108,7 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
   }
 
   dispose() {
+    this.onDispose()
     this.info.curvePositionArray.dispose()
     this.info.curveColorArray.dispose()
     if (this.settings.onClick) {
@@ -115,7 +120,6 @@ export default abstract class BrushBuilder<T extends BrushTypes> {
     if (this.settings.onOver) {
       this.renderer.domElement.removeEventListener('mouseover', this.onOver)
     }
-    this.onDispose()
   }
 
   protected getBezier(
