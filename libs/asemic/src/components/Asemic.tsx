@@ -109,8 +109,6 @@ export function AsemicCanvas({
         <Toggle
           label='pause'
           cb={(state) => {
-            console.log('state;', state, 'audio', audio)
-
             if (state && !audio) {
               initAudio()
             } else setStarted(state)
@@ -237,11 +235,15 @@ export function useAsemic<T extends SettingsInput>({
     audio,
     h,
     size,
+    renderer,
+    scene,
   })
+
   useEffect(() => {
     b.h = h
     b.size = size
   }, [h, size])
+
   useBuilderEvents(b)
 
   postProcessing.outputNode = Fn(() => {
@@ -290,7 +292,7 @@ export function Asemic<T extends SettingsInput>({
   children,
   ...props
 }: Parameters<typeof useAsemic<T>>[0] & {
-  children: ((builder: SceneBuilder) => ReactNode) | ReactNode
+  children?: ((builder: SceneBuilder) => ReactNode) | ReactNode
 }) {
   const builder = useAsemic(props)
   return <>{typeof children === 'function' ? children(builder) : children}</>
