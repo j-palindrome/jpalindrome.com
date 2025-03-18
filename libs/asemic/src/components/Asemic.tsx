@@ -295,5 +295,16 @@ export function Asemic<T extends SettingsInput>({
   children?: ((builder: SceneBuilder) => ReactNode) | ReactNode
 }) {
   const builder = useAsemic(props)
+  useEffect(() => {
+    return () => {
+      builder.groups.forEach((b, i) => {
+        console.log('disposing', i)
+        b.dispose()
+      })
+    }
+  }, [children])
+  useFrame(({ clock }) => {
+    builder.groups.forEach((b) => b.frame(clock.getElapsedTime()))
+  })
   return <>{typeof children === 'function' ? children(builder) : children}</>
 }

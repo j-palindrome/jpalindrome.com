@@ -3,17 +3,33 @@
 import { Asemic, AsemicCanvas } from '@/libs/asemic/src'
 import { useEventListener } from '@/services/client-functions'
 import { range, sample } from 'lodash'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
-const text = `There's a rock with your name on it.
+const text = `Access to the archive: in terms of random access.
+
+One moment. Categorization. The systems behind one field. 
+
+It's argumentative, contingent. 
+
+One archival system is one of non-archiving: of systems outside of control, emergent systems. Self-archives, generative archives.
+
+Pinballs, magnets: entities that attract and group.
+
+This is one archive: a pattern of shifting and grouping, the visual pixels, charged particles, engaging into faces.
+
+The phase after introduction, when you enter into the archive, and the face of the archivist is that which references its depths. The art of following.
+
+The metaphor of the gravestone. A layer of delay. 
+
+One way or the other.
+
+There's a rock with your name on it.
 
 Writing is refraction.
 
 Someone spraypainted it. The background is black and the letters are white.
 
 It's a community rock.
-
-Me and Momo saw two women overwriting it with themselves. 
 
 They changed your name. The “j” retwisted towards “P”, the “d” into “g”.
 
@@ -57,32 +73,32 @@ The rock is over there, its words a postscript to students passing on the path.
 
 I want to publish this, for you—for me—for us. I want to call it “letters.” That's what it is.
 
-In neon blue, your letters blended into white, someone has written on the rock, “Happy Birthday.”`
+In neon blue, your letters blended into white, someone has written on the rock, “Happy Birthday.”`.toLowerCase()
 
 const paragraphs = text.split('\n\n')
 
 export default function Page() {
-  const [scene, setScene] = useState(0)
+  const scene = useRef(0)
 
   useEventListener('click', () => {
-    setScene((scene) => scene + 1)
+    scene.current++
   })
-
-  const thisText = paragraphs[scene].split(' ')
-  console.log(paragraphs, thisText)
 
   return (
     <div>
       <AsemicCanvas dimensions={['100vw', '100vh']}>
         <Asemic>
           {(b) => {
-            b.repeat(5, (i) => (
-              b.new
-                type='line'
-                renderInit={() => Math.random() * 2000}
-                maxCurves={100}
-              >
-                {(g) => {
+            b.groups.forEach((g) => {
+              console.log('disposing:', g)
+              g.dispose()
+            })
+            b.groups = []
+            b.repeat(5, (i) =>
+              b.newGroup(
+                'line',
+                (g) => {
+                  const thisText = paragraphs[scene.current].split(' ')
                   const thisWord = sample(thisText)!
                   g.newText(
                     thisWord,
@@ -97,9 +113,11 @@ export default function Page() {
                       middle: g.getRandomWithin(0.25, 0.75) * g.h,
                     },
                   )
-                }}
-              </Brush>
-            ))
+                },
+                { renderInit: () => Math.random() * 2000, maxCurves: 50 },
+              ),
+            )
+            return <></>
           }}
         </Asemic>
       </AsemicCanvas>
