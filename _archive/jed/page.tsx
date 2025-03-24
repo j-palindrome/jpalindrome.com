@@ -1,9 +1,11 @@
 'use client'
 
-import { Asemic, AsemicCanvas } from '@/libs/asemic/src'
+import { Asemic, AsemicCanvas, SceneBuilder } from '@/libs/asemic/src'
 import { useEventListener } from '@/services/client-functions'
 import { range, sample } from 'lodash'
-import { useRef, useState } from 'react'
+import { CanvasSpace } from 'pts'
+import { useEffect, useRef, useState } from 'react'
+import { AsemicForm, AsemicGroup } from './AsemicForm'
 
 const text = `Access to the archive: in terms of random access.
 
@@ -84,43 +86,16 @@ export default function Page() {
     scene.current++
   })
 
+  const canvas = useRef<HTMLCanvasElement>(null!)
+
+  useEffect(() => {
+    // create a new offscreencanvas
+    const canvas = new OffscreenCanvas(1080, 1080)
+  })
+
   return (
-    <div>
-      <AsemicCanvas dimensions={['100vw', '100vh']}>
-        <Asemic>
-          {(b) => {
-            b.groups.forEach((g) => {
-              console.log('disposing:', g)
-              g.dispose()
-            })
-            b.groups = []
-            b.repeat(5, (i) =>
-              b.newGroup(
-                'line',
-                (g) => {
-                  const thisText = paragraphs[scene.current].split(' ')
-                  const thisWord = sample(thisText)!
-                  g.newText(
-                    thisWord,
-                    {
-                      reset: true,
-                      thickness: () => g.getRandomWithin(3, 15),
-                      alpha: () => g.getRandomWithin(0.3, 1),
-                    },
-                    {
-                      left: g.getRandomWithin(0, 0.25),
-                      width: g.getRandomWithin(0.25, 0.75),
-                      middle: g.getRandomWithin(0.25, 0.75) * g.h,
-                    },
-                  )
-                },
-                { renderInit: () => Math.random() * 2000, maxCurves: 50 },
-              ),
-            )
-            return <></>
-          }}
-        </Asemic>
-      </AsemicCanvas>
+    <div className='h-screen w-screen bg-black'>
+      <canvas ref={canvas} className='h-full w-full'></canvas>
     </div>
   )
 }

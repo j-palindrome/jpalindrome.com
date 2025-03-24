@@ -12,6 +12,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -23,6 +24,7 @@ import { AsemicContext } from '../util/asemicContext'
 import { SettingsInput, useBuilderEvents, useEvents } from '../util/useEvents'
 import { el } from '@elemaudio/core'
 import Toggle from '../util/Toggle'
+import { log } from 'console'
 
 extend({
   QuadMesh,
@@ -42,6 +44,7 @@ export function AsemicCanvas({
   outputChannel = 0,
   useAudio = false,
   highBitDepth = true,
+  ...settings
 }: {
   className?: string
   dimensions?: [number | string, number | string]
@@ -49,7 +52,8 @@ export function AsemicCanvas({
   useAudio?: boolean
   outputChannel?: number | ((ctx: AudioContext) => number)
   highBitDepth?: boolean
-} & React.PropsWithChildren) {
+} & Partial<SceneBuilder['sceneSettings']> &
+  React.PropsWithChildren) {
   const [audio, setAudio] = useState<SceneBuilder['audio']>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null!)
   const [started, setStarted] = useState(!useAudio ? true : false)
@@ -184,7 +188,7 @@ export function AsemicCanvas({
       >
         {started && frameloop === 'always' && (audio || !useAudio) && (
           <AsemicContext.Provider value={{ audio }}>
-            {Children.toArray(children)[scene]}
+            <Asemic {...settings} />
           </AsemicContext.Provider>
         )}
         {frameloop === 'always' && <Adjust />}
@@ -203,7 +207,7 @@ function Adjust() {
   return <></>
 }
 
-export function useAsemic<T extends SettingsInput>({
+function Asemic<T extends SettingsInput>({
   ...settings
 }: {
   controls?: T
@@ -215,50 +219,31 @@ export function useAsemic<T extends SettingsInput>({
     camera,
   }))
 
+  const { audio } = useContext(AsemicContext)
   const size = useThree((state) => state.gl.getDrawingBufferSize(new Vector2()))
 
-  const { audio } = useContext(AsemicContext)
-  const renderTarget = new RenderTarget(size.width, size.height, {
-    type: HalfFloatType,
-  })
-  const renderTarget2 = new RenderTarget(size.width, size.height, {
-    type: HalfFloatType,
-  })
-  const readback = texture(renderTarget.texture)
-
-  const postProcessing = new PostProcessing(renderer)
-  const scenePass = pass(scene, camera)
-
   const h = size.height / size.width
-  const b = new SceneBuilder(settings, {
-    postProcessing: { postProcessing, scenePass, readback },
-    audio,
-    h,
-    size,
-    renderer,
-    scene,
-  })
+  const b = useMemo(
+    () =>
+      new SceneBuilder(settings, {
+        postProcessing: { postProcessing, scenePass, readback },
+        audio,
+        h,
+        size,
+        renderer,
+        scene,
+      }),
+    [],
+  )
 
   useEffect(() => {
     b.h = h
     b.size = size
   }, [h, size])
 
-  useBuilderEvents(b)
-
-  postProcessing.outputNode = Fn(() => {
-    const output = b.sceneSettings
-      .postProcessing(scenePass.getTextureNode('output') as any, {
-        scenePass,
-        readback,
-      })
-      .toVar('outputAssign')
-    return output
-  })()
-
   let phase = true
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     if (b.sceneSettings.useReadback) {
       phase = !phase
       postProcessing.renderer.setRenderTarget(
@@ -272,6 +257,7 @@ export function useAsemic<T extends SettingsInput>({
     } else {
       postProcessing.render()
     }
+    b.groups.forEach((g) => g.frame(clock.elapsedTime))
   }, 1)
 
   // # AUDIO ----
@@ -283,28 +269,13 @@ export function useAsemic<T extends SettingsInput>({
     else b.audio.elCore.render(render, render)
   }
 
-  useEffect(renderAudio, [b])
-
-  return b
-}
-
-export function Asemic<T extends SettingsInput>({
-  children,
-  ...props
-}: Parameters<typeof useAsemic<T>>[0] & {
-  children?: ((builder: SceneBuilder) => ReactNode) | ReactNode
-}) {
-  const builder = useAsemic(props)
   useEffect(() => {
+    renderAudio()
     return () => {
-      builder.groups.forEach((b, i) => {
-        console.log('disposing', i)
-        b.dispose()
-      })
+      console.log('disposing', b.groups)
+      b.scene.clear()
     }
-  }, [children])
-  useFrame(({ clock }) => {
-    builder.groups.forEach((b) => b.frame(clock.getElapsedTime()))
-  })
-  return <>{typeof children === 'function' ? children(builder) : children}</>
+  }, [b])
+
+  return <></>
 }
