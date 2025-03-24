@@ -35,8 +35,6 @@ export default function Client({ apiKey }) {
 
 const Scene = () => {
   const call = useCall()
-  console.log('call:', call)
-
   const { useParticipants, useCallState } = useCallStateHooks()
   const participants = useParticipants()
   const callState = useCallState()

@@ -10,6 +10,7 @@ import {
 } from '@stream-io/video-react-sdk'
 import { useEffect, useMemo, useState } from 'react'
 import { callId } from '../env'
+import { getToken } from './token'
 
 export default function Page({ apiKey }) {
   const [userId, setUserId] = useState<string | null>(null)
@@ -17,7 +18,7 @@ export default function Page({ apiKey }) {
   useEffect(() => {
     const setup = async () => {
       const userId = window.prompt('Enter name:')!
-      const token = await (await fetch(`/api/get-token?name=${userId}`)).text()
+      const token = await getToken(userId)
       setUserId(userId)
       setToken(token)
     }
@@ -58,7 +59,6 @@ export default function Page({ apiKey }) {
   // const resp = await call.get();
   // const rtmpURL = resp.call.ingress.rtmp.address;
   // const streamKey = token;
-  console.log(userId)
 
   return (
     client &&

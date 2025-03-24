@@ -36,7 +36,6 @@ export class AsemicForm {
     this.ctx.lineWidth = 10
     points.scale([this.ctx.canvas.width, this.ctx.canvas.height])
     this.ctx.beginPath()
-    console.log(points)
 
     this.ctx.moveTo(points[0].x, points[0].y)
     if (points.length == 2) {
