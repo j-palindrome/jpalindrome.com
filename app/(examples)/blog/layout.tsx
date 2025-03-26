@@ -11,6 +11,9 @@ export default function Layout({ children }) {
           <Link href='/blog/social-games/mar-4'>mar 4</Link>
           <Link href='/blog/social-games/mar-4'>mar 4</Link>
           <Link href='/blog/social-games/mar-12'>mar 12</Link>
+          <Link href='/blog/social-games/project-proposal'>
+            project proposal
+          </Link>
         </div>
         {children}
       </body>
