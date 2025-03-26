@@ -57,6 +57,7 @@
     "pts": "^0.12.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "reactive-frames": "^0.2.16",
     "rxjs": "^7.8.2",
     "sanity": "^3.80.1",
