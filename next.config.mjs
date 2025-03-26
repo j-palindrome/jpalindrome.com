@@ -16,6 +16,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  async redirects() {
+    return [
+      {
+        source: '/works/crying-trees',
+        destination: '/works/crying-trees/index.html',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {
