@@ -1,4 +1,6 @@
+import { NextRequest } from 'next/server'
 import ReactMarkdown from 'react-markdown'
+import { headers } from 'next/headers'
 
 export default async function Page({ params }) {
   let { fileName } = await params
@@ -10,13 +12,14 @@ export default async function Page({ params }) {
     )
   ).text()
 
-  const uid = webpage.match(/"uid":"(.*?)"/)
-  const host = webpage.match(/"host":"(.*?)"/)
-  const content = await (
-    await fetch(
-      `https://${host![1]}/access/${uid![1]}/${encodeURIComponent(fileName)}.md`,
-    )
-  ).text()
+  const headersList = await headers()
+  const host = headersList.get('host')
+  const protocol = headersList.get('x-forwarded-proto')
+  console.log(
+    await (await fetch(`${protocol}://${host}/api/note-cache`)).json(),
+  )
+  const preloadPage = webpage.match(/window\.preloadPage=f\("(.*?)"\)/)![1]
+  const content = await (await fetch(preloadPage)).text()
 
   return (
     <div className='mt-5'>
