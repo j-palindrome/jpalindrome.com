@@ -25,6 +25,7 @@ import { SettingsInput, useBuilderEvents, useEvents } from '../util/useEvents'
 import { el } from '@elemaudio/core'
 import Toggle from '../util/Toggle'
 import { log } from 'console'
+import { useAsemic } from '..'
 
 extend({
   QuadMesh,
@@ -207,75 +208,21 @@ function Adjust() {
   return <></>
 }
 
-function Asemic<T extends SettingsInput>({
-  ...settings
-}: {
-  controls?: T
-} & Partial<SceneBuilder['sceneSettings']> = {}) {
-  const { renderer, scene, camera } = useThree(({ gl, scene, camera }) => ({
-    // @ts-expect-error
-    renderer: gl as WebGPURenderer,
-    scene,
-    camera,
-  }))
-
-  const { audio } = useContext(AsemicContext)
-  const size = useThree((state) => state.gl.getDrawingBufferSize(new Vector2()))
-
-  const h = size.height / size.width
-  const b = useMemo(
-    () =>
-      new SceneBuilder(settings, {
-        postProcessing: { postProcessing, scenePass, readback },
-        audio,
-        h,
-        size,
-        renderer,
-        scene,
-      }),
-    [],
-  )
-
+export function Asemic<T extends SettingsInput>({
+  children,
+  ...props
+}: Parameters<typeof useAsemic<T>>[0] & {
+  children?: ((builder: SceneBuilder) => ReactNode) | ReactNode
+}) {
+  const builder = useAsemic(props)
+  const { scene } = useThree()
   useEffect(() => {
-    b.h = h
-    b.size = size
-  }, [h, size])
-
-  let phase = true
-
-  useFrame(({ clock }) => {
-    if (b.sceneSettings.useReadback) {
-      phase = !phase
-      postProcessing.renderer.setRenderTarget(
-        phase ? renderTarget : renderTarget2,
-      )
-      postProcessing.render()
-      postProcessing.renderer.setRenderTarget(null)
-      postProcessing.render()
-      readback.value = phase ? renderTarget.texture : renderTarget2.texture
-      readback.needsUpdate = true
-    } else {
-      postProcessing.render()
-    }
-    b.groups.forEach((g) => g.frame(clock.elapsedTime))
-  }, 1)
-
-  // # AUDIO ----
-
-  const renderAudio = () => {
-    if (!b.audio || !b.sceneSettings.audio) return
-    const render = b.sceneSettings.audio(el)
-    if (render instanceof Array) b.audio.elCore.render(...render)
-    else b.audio.elCore.render(render, render)
-  }
-
-  useEffect(() => {
-    renderAudio()
     return () => {
-      console.log('disposing', b.groups)
-      b.scene.clear()
+      scene.clear()
     }
-  }, [b])
-
-  return <></>
+  }, [children])
+  useFrame(({ clock }) => {
+    builder.groups.forEach(b => b.frame(clock.getElapsedTime()))
+  })
+  return <>{typeof children === 'function' ? children(builder) : children}</>
 }

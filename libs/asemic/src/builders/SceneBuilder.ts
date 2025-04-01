@@ -63,7 +63,7 @@ export default class SceneBuilder extends Builder {
     audio: ((el: typeof elementary) => ElemNode | [ElemNode, ElemNode]) | null
     useReadback: boolean
   } = {
-    // postProcessing: (input) => input,
+    postProcessing: (input) => input,
     useReadback: false,
     audio: null,
   }
