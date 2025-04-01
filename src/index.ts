@@ -1,5 +1,4 @@
 export { AsemicCanvas, Asemic, useAsemic } from './components/Asemic'
-export { default as Brush } from './components/Brush'
 export { default as Background } from './components/Background'
 export { default as BrushBuilder } from './builders/BrushBuilder'
 export { default as Builder } from './builders/Builder'

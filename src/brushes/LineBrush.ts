@@ -143,8 +143,8 @@ export class LineBrush extends BrushBuilder<'line'> {
   }
 
   protected onDispose() {
+    this.scene.remove(this.info.mesh)
     this.info.material.dispose()
     this.info.geometry.dispose()
-    this.scene.remove(this.info.mesh)
   }
 }

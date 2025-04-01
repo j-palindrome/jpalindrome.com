@@ -48,20 +48,20 @@ export default class SceneBuilder extends Builder {
       info: {
         scenePass: BuilderGlobals['postProcessing']['scenePass']
         readback: BuilderGlobals['postProcessing']['readback']
-      }
+      },
     ) => ShaderNodeObject<any>
     audio: ((el: typeof elementary) => ElemNode | [ElemNode, ElemNode]) | null
     useReadback: boolean
   } = {
-    postProcessing: input => input,
+    postProcessing: (input) => input,
     useReadback: false,
-    audio: null
+    audio: null,
   }
 
   newGroup<T extends BrushTypes>(
     type: T,
     onInit: (g: GroupBuilder) => void,
-    settings: BrushData<T>
+    settings: Partial<BrushData<T> & ProcessData<T>>,
   ) {
     const group = new GroupBuilder(onInit)
     let constructor
@@ -89,14 +89,14 @@ export default class SceneBuilder extends Builder {
       new constructor(settings ?? { type }, {
         renderer: this.renderer,
         group,
-        scene: this.scene
-      })
+        scene: this.scene,
+      }),
     )
   }
 
   constructor(
     sceneSettings: Partial<SceneBuilder['sceneSettings']>,
-    globals: BuilderGlobals
+    globals: BuilderGlobals,
   ) {
     super()
     Object.assign(this.sceneSettings, sceneSettings)

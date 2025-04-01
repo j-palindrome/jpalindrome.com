@@ -49,7 +49,8 @@ export default class GroupBuilder extends Builder {
         const progress = this.getAlongCached(i / count, c)
 
         const thickness =
-          this.getAlong(i / count, ...curve.map(x => x.thickness)) / this.size.x
+          this.getAlong(i / count, ...curve.map((x) => x.thickness)) /
+          this.size.x
 
         lastXValues = thisXValues
         lastYValues = thisYValues
@@ -72,8 +73,8 @@ export default class GroupBuilder extends Builder {
     frequency: number = 1,
     {
       waveshape = 'sine',
-      signed = false
-    }: { waveshape?: 'sine' | 'saw'; signed?: boolean } = {}
+      signed = false,
+    }: { waveshape?: 'sine' | 'saw'; signed?: boolean } = {},
   ) {
     let noise: number
     switch (waveshape) {
@@ -92,8 +93,8 @@ export default class GroupBuilder extends Builder {
     {
       index,
       signed = false,
-      harmonics = 1
-    }: { index?: number; signed?: boolean; harmonics?: number } = {}
+      harmonics = 1,
+    }: { index?: number; signed?: boolean; harmonics?: number } = {},
   ) {
     if (index === undefined) index = this.noiseIndex
 
@@ -154,7 +155,7 @@ export default class GroupBuilder extends Builder {
       if (typeof value === 'function') {
         newPointSettings[key] = value([
           last(this.curves)?.length ?? 0,
-          this.curves.length
+          this.curves.length,
         ])
       } else {
         newPointSettings[key] = value
@@ -168,7 +169,7 @@ export default class GroupBuilder extends Builder {
     else if (coordinate instanceof Vector2)
       return new PointBuilder(
         [coordinate.x, coordinate.y],
-        this.getPointSettings()
+        this.getPointSettings(),
       )
     else {
       if (coordinate[2]) {
@@ -177,16 +178,16 @@ export default class GroupBuilder extends Builder {
       return this.applyTransform(
         new PointBuilder(
           [coordinate[0], coordinate[1]],
-          this.getPointSettings()
+          this.getPointSettings(),
         ),
-        this.currentTransform
+        this.currentTransform,
       )
     }
   }
 
   protected interpolateCurve(
     curve: PointBuilder[],
-    controlPointsCount: number
+    controlPointsCount: number,
   ) {
     const newCurvePoints: PointBuilder[] = []
     for (let i = 0; i < controlPointsCount; i++) {
@@ -208,7 +209,7 @@ export default class GroupBuilder extends Builder {
   protected getTransformAt(transforms: TransformData[], progress: number) {
     const { t, start } = {
       start: Math.floor(progress * (transforms.length - 1)),
-      t: (progress * (transforms.length - 1)) % 1
+      t: (progress * (transforms.length - 1)) % 1,
     }
 
     const curveInterpolate = <T extends Vector2 | number>(groups: T[]) => {
@@ -223,7 +224,7 @@ export default class GroupBuilder extends Builder {
 
     const makeBezier = <T extends keyof TransformData>(key: T) => {
       const groups = range(2).map(
-        i => transforms[(start + i) % transforms.length][key]
+        (i) => transforms[(start + i) % transforms.length][key],
       )
 
       return curveInterpolate(groups as any)
@@ -232,29 +233,29 @@ export default class GroupBuilder extends Builder {
     const { rotate, translate, scale } = {
       rotate: makeBezier('rotate'),
       translate: makeBezier('translate'),
-      scale: makeBezier('scale')
+      scale: makeBezier('scale'),
     }
 
     return { rotate, translate, scale } as TransformData
   }
 
   getBounds(points: PointBuilder[]) {
-    const flatX = points.map(x => x.x)
-    const flatY = points.map(y => y.y)
+    const flatX = points.map((x) => x.x)
+    const flatY = points.map((y) => y.y)
     const minCoord = new Vector2(min(flatX)!, min(flatY)!)
     const maxCoord = new Vector2(max(flatX)!, max(flatY)!)
     return {
       min: minCoord,
       max: maxCoord,
       size: new Vector2().subVectors(maxCoord, minCoord),
-      center: new Vector2().lerpVectors(minCoord, maxCoord, 0.5)
+      center: new Vector2().lerpVectors(minCoord, maxCoord, 0.5),
     }
   }
 
   randomize({
     translate,
     rotate,
-    scale
+    scale,
   }: {
     translate?: [Coordinate, Coordinate]
     rotate?: [number, number]
@@ -274,9 +275,9 @@ export default class GroupBuilder extends Builder {
     const transform = this.toTransform({
       translate: translatePoint,
       scale: scalePoint,
-      rotate: rotatePoint
+      rotate: rotatePoint,
     })
-    this.curves.flat().forEach(p => {
+    this.curves.flat().forEach((p) => {
       this.applyTransform(p, transform)
     })
 
@@ -284,30 +285,30 @@ export default class GroupBuilder extends Builder {
   }
 
   getRandomAlong(...curve: Coordinate[]) {
-    const curvePoints = curve.map(x => this.toPoint(x))
+    const curvePoints = curve.map((x) => this.toPoint(x))
     if (curve.length === 2) {
       return this.toPoint(curve[0]).lerp(this.toPoint(curve[1]), Math.random())
     }
     return new PointBuilder([0, 0]).copy(
-      multiBezierJS(Math.random(), ...curvePoints)
+      multiBezierJS(Math.random(), ...curvePoints),
     )
   }
 
   getRandomWithin(low: number, high: number): number
   getRandomWithin(
     low: [number, number],
-    high: [number, number]
+    high: [number, number],
   ): [number, number]
   getRandomWithin(
     low: [number, number],
     high: [number, number],
-    count: number
+    count: number,
   ): [number, number][]
   getRandomWithin(low: number, high: number, count: number): number[]
   getRandomWithin(
     low: number | [number, number],
     high: number | [number, number],
-    count = 1
+    count = 1,
   ): number | [number, number] | (number | [number, number])[] {
     const random = () => {
       if (typeof low === 'number' && typeof high === 'number') {
@@ -315,7 +316,7 @@ export default class GroupBuilder extends Builder {
       } else {
         return [
           low[0] + Math.random() * (high[0] - low[0]),
-          low[1] + Math.random() * (high[1] - low[1])
+          low[1] + Math.random() * (high[1] - low[1]),
         ] as [number, number]
       }
     }
@@ -330,18 +331,18 @@ export default class GroupBuilder extends Builder {
   getRandomAround(origin: number, variation: number): number
   getRandomAround(
     origin: [number, number],
-    variation: [number, number]
+    variation: [number, number],
   ): [number, number]
   getRandomAround(
     origin: [number, number],
     variation: [number, number],
-    count: number
+    count: number,
   ): [number, number][]
   getRandomAround(origin: number, variation: number, count: number): number[]
   getRandomAround(
     origin: number | [number, number],
     variation: number | [number, number],
-    count = 1
+    count = 1,
   ): number | [number, number] | (number | [number, number])[] {
     const random = () => {
       if (typeof origin === 'number' && typeof variation === 'number') {
@@ -353,7 +354,7 @@ export default class GroupBuilder extends Builder {
               .random()
               .subScalar(0.5)
               .multiplyScalar(2)
-              .multiply(new Vector2(...(variation as [number, number])))
+              .multiply(new Vector2(...(variation as [number, number]))),
           )
           .toArray()
       }
@@ -367,18 +368,18 @@ export default class GroupBuilder extends Builder {
     console.log(
       `
 ${this.curves
-  .map(c =>
+  .map((c) =>
     c
       .map(
-        p =>
+        (p) =>
           `${p
             .toArray()
-            .map(p => p.toFixed(2))
-            .join(',')}`
+            .map((p) => p.toFixed(2))
+            .join(',')}`,
       )
-      .join(' ')
+      .join(' '),
   )
-  .join('\n')}`
+  .join('\n')}`,
     )
     return this
   }
@@ -387,10 +388,10 @@ ${this.curves
     const fromV = this.toPoint(from)
     const size = new Vector2().copy(this.toPoint(to)).sub(fromV)
 
-    this.lastCurves(g => {
+    this.lastCurves((g) => {
       const curves = g.flat()
       const bounds = this.getBounds(curves)
-      curves.forEach(p => {
+      curves.forEach((p) => {
         p.sub(bounds.min).divide(bounds.size).multiply(size).add(fromV)
       })
     }, curves)
@@ -401,10 +402,10 @@ ${this.curves
   withinX(from: number, to: number, curves: number) {
     const size = to - from
 
-    this.lastCurves(g => {
+    this.lastCurves((g) => {
       const curves = g.flat()
       const bounds = this.getBounds(curves)
-      curves.forEach(p => {
+      curves.forEach((p) => {
         p.sub(bounds.min)
           .divide({ x: bounds.size.x, y: bounds.size.x })
           .multiply({ x: size, y: size })
@@ -422,10 +423,10 @@ ${this.curves
 
   protected lastCurves(
     callback: (curves: PointBuilder[][]) => void,
-    curves: number
+    curves: number,
   ) {
     let newCurves: PointBuilder[][] = this.curves.slice(
-      this.curves.length - curves
+      this.curves.length - curves,
     )
     callback(newCurves)
   }
@@ -434,18 +435,18 @@ ${this.curves
    * Slide the curve along itself to offset its start point.
    */
   slide(amount: number) {
-    return this.lastCurve(curve => {
+    return this.lastCurve((curve) => {
       // const totalLength = path.getLength()
       const offset = curve[0].clone().sub(this.getAlongCached(amount, -1))
-      curve.forEach(point => point.add(offset))
+      curve.forEach((point) => point.add(offset))
     })
   }
 
   newCurvesBlank(curveCount: number, pointCount: number) {
     this.curves.push(
       ...range(curveCount).map(() =>
-        range(pointCount).map(() => new PointBuilder())
-      )
+        range(pointCount).map(() => new PointBuilder()),
+      ),
     )
     return this
   }
@@ -464,7 +465,7 @@ ${this.curves
           [0.5, 1],
           [-0.5, 1],
           [-0.5, 0],
-          [0, 0]
+          [0, 0],
         ]
         break
       case 7:
@@ -477,7 +478,7 @@ ${this.curves
           [-0.5, 0.66],
           [-0.5, 0.33],
           [-0.33 / 2, 0],
-          [0, 0]
+          [0, 0],
         ]
         break
     }
@@ -492,7 +493,7 @@ ${this.curves
   }
 
   newPoints(...points: (Coordinate | PointBuilder | CoordinateData)[]) {
-    return this.lastCurve(c => c.push(...this.toPoints(...points)))
+    return this.lastCurve((c) => c.push(...this.toPoints(...points)))
   }
 
   setCurves(
@@ -504,16 +505,16 @@ ${this.curves
       top: number
       middle: number
       varyPosition?: [number, number]
-    }>
+    }>,
   ) {
     const textCurves = this.curves.slice(
       curves === 'all'
         ? 0
         : curves === 'new'
-        ? this.lastIndex
-        : curves < 0
-        ? this.curves.length + curves
-        : curves
+          ? this.lastIndex
+          : curves < 0
+            ? this.curves.length + curves
+            : curves,
     )
     const flatCurves = textCurves.flat()
     const bounds = this.getBounds(textCurves.flat())
@@ -523,12 +524,12 @@ ${this.curves
         settings.varyPosition instanceof Array
           ? settings.varyPosition
           : [settings.varyPosition, settings.varyPosition]
-      flatCurves.forEach(point => {
+      flatCurves.forEach((point) => {
         this.applyTransform(
           point,
           this.toTransform({
-            translate: this.getRandomAround([0, 0], varyPosition)
-          })
+            translate: this.getRandomAround([0, 0], varyPosition),
+          }),
         )
       })
     }
@@ -539,7 +540,7 @@ ${this.curves
         bounds.min
           .clone()
           .add(bounds.size.divideScalar(bounds.size.x / settings.width)),
-        textCurves.length
+        textCurves.length,
       )
       bounds.max = bounds.min.clone().add(bounds.size)
       bounds.center = bounds.min
@@ -549,31 +550,33 @@ ${this.curves
 
     if (settings.center !== undefined) {
       const lineBounds = this.getBounds(flatCurves)
-      flatCurves.forEach(point =>
-        point.add({ x: settings.center! - lineBounds.center.x, y: 0 })
+      flatCurves.forEach((point) =>
+        point.add({ x: settings.center! - lineBounds.center.x, y: 0 }),
       )
     }
 
     if (settings.left !== undefined) {
-      textCurves.flat().forEach(point =>
+      textCurves.flat().forEach((point) =>
         point.add({
           x: settings.left! - bounds.min.x,
-          y: 0
-        })
+          y: 0,
+        }),
       )
     }
 
     if (settings.top !== undefined) {
       textCurves
         .flat()
-        .forEach(point => point.add({ x: 0, y: settings.top! - bounds.max.y }))
+        .forEach((point) =>
+          point.add({ x: 0, y: settings.top! - bounds.max.y }),
+        )
     }
 
     if (settings.middle !== undefined) {
       textCurves
         .flat()
-        .forEach(point =>
-          point.add({ x: 0, y: settings.middle! - bounds.center.y })
+        .forEach((point) =>
+          point.add({ x: 0, y: settings.middle! - bounds.center.y }),
         )
     }
     return this
@@ -583,7 +586,7 @@ ${this.curves
     str: string,
     transform?: CoordinateData,
     settings?: Parameters<(typeof this)['setCurves']>[1],
-    eachLetter?: (i: number) => void
+    eachLetter?: (i: number) => void,
   ) {
     if (transform) {
       this.transform({ ...transform, push: true })
@@ -602,7 +605,7 @@ ${this.curves
         this.transform({
           reset: 'pop',
           translate: [0, -1.5],
-          push: true
+          push: true,
         })
       }
       i++
