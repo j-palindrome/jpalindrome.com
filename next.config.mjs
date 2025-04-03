@@ -9,13 +9,33 @@ const nextConfig = {
     ],
   },
   experimental: {
-    taint: true,
+    turbo: {
+      rules: {
+        '*.mp4': {
+          loaders: ['file-loader'],
+        }
+      }
+    },
   },
   devIndicators: false,
   typescript: {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  // webpack: (config) => {
+  //   config.module.rules.push({
+  //     test: /\.(mp4|webm|ogg)$/,
+  //     use: {
+  //       loader: 'file-loader',
+  //       options: {
+  //         name: 'static/media/[name].[hash].[ext]',
+  //         publicPath: '/_next/',
+  //       },
+  //     },
+  //   });
+  //   return config;
+  // },
+
   async redirects() {
     return [
       {

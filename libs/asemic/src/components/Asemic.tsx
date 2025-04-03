@@ -157,7 +157,7 @@ export function AsemicCanvas({
           bottom: 0,
           position: [0, 0, 0]
         }}
-        gl={canvas => {
+        gl={({canvas}) => {
           const renderer = new WebGPURenderer({
             canvas: canvas as HTMLCanvasElement,
             powerPreference: 'high-performance',
@@ -223,20 +223,20 @@ export function useAsemic<T extends SettingsInput>({
   const size = useThree(state => state.gl.getDrawingBufferSize(new Vector2()))
 
   const { audio } = useContext(AsemicContext)
-  // const renderTarget = new RenderTarget(size.width, size.height, {
-  //   type: HalfFloatType
-  // })
-  // const renderTarget2 = new RenderTarget(size.width, size.height, {
-  //   type: HalfFloatType
-  // })
-  // const readback = texture(renderTarget.texture)
+  const renderTarget = new RenderTarget(size.width, size.height, {
+    type: HalfFloatType
+  })
+  const renderTarget2 = new RenderTarget(size.width, size.height, {
+    type: HalfFloatType
+  })
+  const readback = texture(renderTarget.texture)
 
   const postProcessing = new PostProcessing(renderer)
   const scenePass = pass(scene, camera)
 
   const h = size.height / size.width
   const b = new SceneBuilder(settings, {
-    // postProcessing: { postProcessing, scenePass, readback },
+    postProcessing: { postProcessing, scenePass, readback },
     audio,
     h,
     size
