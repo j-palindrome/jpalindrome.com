@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 
-export default function Client({uris}: {uris: string[]}) {
+export default function Client({ uris }: { uris: string[] }) {
   const [hue, setHue] = useState(0)
   const [saturation, setSaturation] = useState(100)
   const [value, setValue] = useState(100)
@@ -86,7 +86,7 @@ export default function Client({uris}: {uris: string[]}) {
         autoPlay
         muted
         loop
-        src={`/assets/cora/${video}.webm`}
+        src={uris[video]}
         style={{
           filter: `hue-rotate(${hue}deg) saturate(${saturation}%) brightness(${value}%)`,
         }}
