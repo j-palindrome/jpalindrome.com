@@ -19,10 +19,7 @@ export default async function Layout({ children }) {
       <head></head>
       <body className='bg-black p-8 font-mono text-white'>
         <div className='flex w-full *:m-2 whitespace-nowrap flex-wrap'>
-          <Link href='/blog/social-games/feb-14'>feb 14</Link>
-          <Link href='/blog/social-games/feb-26'>feb 26</Link>
-          <Link href='/blog/social-games/mar-4'>mar 4</Link>
-          {links.map((link) => {
+          {links.sort().map((link) => {
             const filteredLink = link.split('/').pop()?.split('.').shift()
             return (
               <Link

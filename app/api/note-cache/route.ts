@@ -6,12 +6,16 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const pageTime = await (
     await fetch(`https://publish.obsidian.md/jpalindrome`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 },
     })
   ).text()
 
   const preloadCache = pageTime.match(/window.preloadCache=f\("(.*?)"\)/)![1]
-  const cache = await (await fetch(preloadCache)).json()
+  const cache = await (
+    await fetch(preloadCache, {
+      next: { revalidate: 300 },
+    })
+  ).json()
   const titles = Object.keys(cache)
   const { searchParams } = new URL(request.url)
   const titleParam = searchParams.get('title')
