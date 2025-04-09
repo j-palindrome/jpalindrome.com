@@ -8,16 +8,10 @@ export default async function Page({ params }) {
 
   const webpage = await (
     await fetch(
-      `https://publish.obsidian.md/jpalindrome/${fileName.replace(/ /g, '+')}`,
+      `https://publish.obsidian.md/jpalindrome/${fileName.replace(/ /g, '+')}`
     )
   ).text()
 
-  const headersList = await headers()
-  const host = headersList.get('host')
-  const protocol = headersList.get('x-forwarded-proto')
-  console.log(
-    await (await fetch(`${protocol}://${host}/api/note-cache`)).json(),
-  )
   const preloadPage = webpage.match(/window\.preloadPage=f\("(.*?)"\)/)![1]
   const content = await (await fetch(preloadPage)).text()
 
@@ -27,7 +21,10 @@ export default async function Page({ params }) {
         Fetched from{' '}
         <a
           className='font-bold'
-          href={`https://publish.obsidian.md/jpalindrome/${fileName.replace(/ /g, '+')}`}
+          href={`https://publish.obsidian.md/jpalindrome/${fileName.replace(
+            / /g,
+            '+'
+          )}`}
         >
           Obsidian Publish
         </a>
